@@ -1,10 +1,10 @@
 {
   "version": "1",
   "cognitoConfig": {
-    "identityPoolName": "platformmanager4831dac0_identitypool_4831dac0",
+    "identityPoolName": "PlatformManager",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "platfo4831dac0",
-    "userPoolName": "platformmanager4831dac0_userpool_4831dac0",
+    "resourceNameTruncated": "platfobd0b0e20",
+    "userPoolName": "PlatformManager",
     "autoVerifiedAttributes": [
       "email"
     ],
@@ -16,11 +16,18 @@
     "smsVerificationMessage": "Your verification code is {####}",
     "emailVerificationSubject": "Your verification code",
     "emailVerificationMessage": "Your verification code is {####}",
-    "defaultPasswordPolicy": false,
+    "defaultPasswordPolicy": true,
     "passwordPolicyMinLength": 8,
-    "passwordPolicyCharacters": [],
+    "passwordPolicyCharacters": [
+      "Requires Lowercase",
+      "Requires Uppercase",
+      "Requires Numbers",
+      "Requires Symbols"
+    ],
     "requiredAttributes": [
-      "email"
+      "email",
+      "family_name",
+      "given_name"
     ],
     "aliasAttributes": [],
     "userpoolClientGenerateSecret": false,
@@ -31,16 +38,24 @@
     "userpoolClientReadAttributes": [
       "email"
     ],
-    "userpoolClientLambdaRole": "platfo4831dac0_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "UserAubd0b0e20_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "4831dac0",
-    "resourceName": "platformmanager4831dac0",
+    "sharedId": "bd0b0e20",
+    "resourceName": "UserAuth",
     "authSelections": "identityPoolAndUserPool",
-    "useDefault": "default",
+    "useDefault": "manual",
+    "thirdPartyAuth": false,
     "usernameAttributes": [
       "email"
     ],
-    "userPoolGroupList": [],
+    "userPoolGroups": true,
+    "adminQueries": true,
+    "triggers": {},
+    "hostedUI": false,
+    "userPoolGroupList": [
+      "Admin"
+    ],
+    "adminQueryGroup": "Admin",
     "serviceName": "Cognito",
     "usernameCaseSensitive": false,
     "useEnabledMfas": true
