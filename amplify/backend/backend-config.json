@@ -89,5 +89,12 @@
         }
       ]
     }
+  },
+  "storage": {
+    "s3platformmanager": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": []
+    }
   }
 }

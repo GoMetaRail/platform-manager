@@ -27,5 +27,11 @@ export type AmplifyDependentResourcesAttributes = {
             "ApiName": "string",
             "ApiId": "string"
         }
+    },
+    "storage": {
+        "s3platformmanager": {
+            "BucketName": "string",
+            "Region": "string"
+        }
     }
 }

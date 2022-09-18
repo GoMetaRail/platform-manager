@@ -13,7 +13,8 @@
     },
     "categories": {
       "auth": {
-        "UserAuth": {}
+        "UserAuth": {},
+        "userPoolGroups": {}
       },
       "function": {
         "AdminQueries5455baee": {

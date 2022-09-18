@@ -1,0 +1,12 @@
+{
+  "resourceName": "s3platformmanager",
+  "bucketName": "platformmanager",
+  "policyUUID": "d03b6208",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ]
+}
