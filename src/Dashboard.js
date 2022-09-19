@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Link, Menu, MenuItem, Grid, Card, Heading, Button, ScrollView } from '@aws-amplify/ui-react';
+import {
+  Menu,
+  MenuItem,
+  Grid,
+  Card,
+  Heading,
+  Button,
+  TextField,
+  TextAreaField
+} from '@aws-amplify/ui-react';
 import Amplify from 'aws-amplify';
 
 import {
   BrowserRouter as Router,
-  Link as ReactRouterLink,
+  useParams,
   NavLink,
   useNavigate,
   Routes,
@@ -46,7 +55,7 @@ function Home() {
               <p>Category: {platform.category}</p>
               <p>Description:<br/>{platform.description}</p>
             </p>
-            <Button variation="primary" onClick={() => navigate('/edit/' + platform.name)}>Edit</Button>
+            <Button variation="primary" onClick={() => navigate(`/edit/${platform.category}/${platform.name}`)}>Edit</Button>
           </div>
         );
       })}
@@ -55,9 +64,91 @@ function Home() {
 }
 
 function EditPlatform() {
+  let { category, name } = useParams();
+  const navigate = useNavigate();
+  const [platform, setPlatform] = useState([]);
+  useEffect(() => {
+    fetch(`https://api.dev.gometarail.io/platform/category/${category}/name/${name}`, {
+      method: 'GET',
+      headers: {
+        'x-api-key': 'K5UkJ7Jgu3aHXTnsDRYHjarywILS5Al37NnO4yr5'
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('HERE', data);
+        setPlatform(data.Item);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }, []);
+
+  const handleInputChange = (event) => {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const fieldName = target.name;
+
+    setPlatform({
+      ...platform,
+      [fieldName]: value
+    });
+
+    console.log(platform);
+  }
+
+  const savePlatform = () => {
+    fetch('https://api.dev.gometarail.io/platform', {
+      method: 'PUT',
+      headers: {
+        'x-api-key': 'K5UkJ7Jgu3aHXTnsDRYHjarywILS5Al37NnO4yr5'
+      },
+      body: JSON.stringify(platform)
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('HERE', data);
+        setPlatform(data.Item);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }
+
   return (
-    <div>EDIT PLATFORM</div>
-  )
+    <div>
+      <Card>
+        <Heading level={4}>Edit Platform</Heading>
+      </Card>
+      <Card>
+        <TextField autoComplete="off" label="Category" value={platform.category} name="category" onChange={handleInputChange}/>
+      </Card>
+      <Card>
+        <TextField autoComplete="off" label="Name" value={platform.name} name="name" onChange={handleInputChange}/>
+      </Card>
+      <Card>
+        <TextAreaField autoComplete="off" label="Description" value={platform.description} name="description" onChange={handleInputChange}/>
+      </Card>
+      <Card>
+        <TextField autoComplete="off" label="Domain (without http:// or the path, example: google.com)" value={platform.domain} name="domain" onChange={handleInputChange}/>
+      </Card>
+      <Card>
+        <TextField autoComplete="off" label="URL (to open when platform is launched)" value={platform.url} name="url" onChange={handleInputChange}/>
+      </Card>
+      <Card>
+        <TextField autoComplete="off" label="Icon Image" value={platform.iconImage} name="iconImage" onChange={handleInputChange}/>
+      </Card>
+      <Card>
+        <TextField autoComplete="off" label="Network" value={platform.network} name="network" onChange={handleInputChange}/>
+      </Card>
+      <Card>
+        <TextField autoComplete="off" label="Network Symbol" value={platform.networkSymbol} name="networkSymbol" onChange={handleInputChange}/>
+      </Card>
+      <Card>
+        <Button onClick={() => { savePlatform(); }}>Save</Button>
+      </Card>
+    </div>
+  );
 }
 
 function Dashboard({ isPassedToWithAuthenticator, signOut, user }) {
@@ -103,7 +194,7 @@ function Dashboard({ isPassedToWithAuthenticator, signOut, user }) {
           id="sidebarMenu"
         >
           <NavLink to="/" end>Home</NavLink>
-          <NavLink to="/edit">Edit</NavLink>
+          <NavLink to="/edit/">Edit</NavLink>
         </Card>
         <Card
           columnStart="2"
@@ -111,7 +202,7 @@ function Dashboard({ isPassedToWithAuthenticator, signOut, user }) {
         >
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/edit" element={<EditPlatform />} />
+            <Route path="/edit/:category/:name" element={<EditPlatform />} />
           </Routes>
         </Card>
       </Grid>
