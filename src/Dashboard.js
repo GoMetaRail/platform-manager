@@ -1,158 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Menu,
   MenuItem,
   Grid,
   Card,
-  Heading,
-  Button,
-  TextField,
-  TextAreaField
+  Heading
 } from '@aws-amplify/ui-react';
-import Amplify from 'aws-amplify';
+import Amplify, {Auth} from 'aws-amplify';
 
 import {
   BrowserRouter as Router,
-  useParams,
   NavLink,
-  useNavigate,
   Routes,
   Route,
 } from 'react-router-dom';
 
-import { withAuthenticator } from '@aws-amplify/ui-react';
+import {withAuthenticator} from '@aws-amplify/ui-react';
 
 import awsExports from "./aws-exports";
-Amplify.configure(awsExports);
 
-function Home() {
-  const navigate = useNavigate();
-  const [platforms, setPlatforms] = useState([]);
-  useEffect(() => {
-    fetch('https://api.dev.gometarail.io/platform', {
-      method: 'GET',
-      headers: {
-        'x-api-key': 'K5UkJ7Jgu3aHXTnsDRYHjarywILS5Al37NnO4yr5'
+import Home from "./Home";
+import EditPlatform from "./EditPlatform";
+
+Amplify.configure({
+  ...awsExports,
+  aws_cloud_logic_custom: [
+    {
+      name: 'GoMetaRail',
+      endpoint: 'https://api.dev.gometarail.io',
+      region: 'us-east-2',
+      custom_header: async () => {
+        return {
+          // todo: move this to env
+          'x-api-key': 'K5UkJ7Jgu3aHXTnsDRYHjarywILS5Al37NnO4yr5',
+          // Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`
+        }
       }
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('HERE', data);
-        setPlatforms(data.Items);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }, []);
-
-  return (
-    <div>
-      {platforms.map((platform) => {
-        return (
-          <div className="post-card" key={platform.category + '-' + platform.name}>
-            <h2 className="post-title">{platform.name}</h2>
-            <p className="post-body">
-              <p>Category: {platform.category}</p>
-              <p>Description:<br/>{platform.description}</p>
-            </p>
-            <Button variation="primary" onClick={() => navigate(`/edit/${platform.category}/${platform.name}`)}>Edit</Button>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function EditPlatform() {
-  let { category, name } = useParams();
-  const navigate = useNavigate();
-  const [platform, setPlatform] = useState([]);
-  useEffect(() => {
-    fetch(`https://api.dev.gometarail.io/platform/category/${category}/name/${name}`, {
-      method: 'GET',
-      headers: {
-        'x-api-key': 'K5UkJ7Jgu3aHXTnsDRYHjarywILS5Al37NnO4yr5'
-      }
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('HERE', data);
-        setPlatform(data.Item);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }, []);
-
-  const handleInputChange = (event) => {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const fieldName = target.name;
-
-    setPlatform({
-      ...platform,
-      [fieldName]: value
-    });
-
-    console.log(platform);
-  }
-
-  const savePlatform = () => {
-    fetch('https://api.dev.gometarail.io/platform', {
-      method: 'PUT',
-      headers: {
-        'x-api-key': 'K5UkJ7Jgu3aHXTnsDRYHjarywILS5Al37NnO4yr5'
-      },
-      body: JSON.stringify(platform)
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('HERE', data);
-        setPlatform(data.Item);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }
-
-  return (
-    <div>
-      <Card>
-        <Heading level={4}>Edit Platform</Heading>
-      </Card>
-      <Card>
-        <TextField autoComplete="off" label="Category" value={platform.category} name="category" onChange={handleInputChange}/>
-      </Card>
-      <Card>
-        <TextField autoComplete="off" label="Name" value={platform.name} name="name" onChange={handleInputChange}/>
-      </Card>
-      <Card>
-        <TextAreaField autoComplete="off" label="Description" value={platform.description} name="description" onChange={handleInputChange}/>
-      </Card>
-      <Card>
-        <TextField autoComplete="off" label="Domain (without http:// or the path, example: google.com)" value={platform.domain} name="domain" onChange={handleInputChange}/>
-      </Card>
-      <Card>
-        <TextField autoComplete="off" label="URL (to open when platform is launched)" value={platform.url} name="url" onChange={handleInputChange}/>
-      </Card>
-      <Card>
-        <TextField autoComplete="off" label="Icon Image" value={platform.iconImage} name="iconImage" onChange={handleInputChange}/>
-      </Card>
-      <Card>
-        <TextField autoComplete="off" label="Network" value={platform.network} name="network" onChange={handleInputChange}/>
-      </Card>
-      <Card>
-        <TextField autoComplete="off" label="Network Symbol" value={platform.networkSymbol} name="networkSymbol" onChange={handleInputChange}/>
-      </Card>
-      <Card>
-        <Button onClick={() => { savePlatform(); }}>Save</Button>
-      </Card>
-    </div>
-  );
-}
+    }
+  ],
+  aws_appsync_authenticationType: 'API_KEY',
+  aws_appsync_apiKey: 'K5UkJ7Jgu3aHXTnsDRYHjarywILS5Al37NnO4yr5'
+});
 
 function Dashboard({ isPassedToWithAuthenticator, signOut, user }) {
-  return(
+  return (
     <Router>
       <Grid
         columnGap="0.5rem"
@@ -201,8 +92,8 @@ function Dashboard({ isPassedToWithAuthenticator, signOut, user }) {
           columnEnd="-1"
         >
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/edit/:category/:name" element={<EditPlatform />} />
+            <Route path="/" element={<Home/>}/>
+            <Route path="/edit/:category/:name" element={<EditPlatform/>}/>
           </Routes>
         </Card>
       </Grid>
