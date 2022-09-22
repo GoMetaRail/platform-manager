@@ -3,7 +3,7 @@ import {
   Button
 } from '@aws-amplify/ui-react';
 import {API, graphqlOperation} from 'aws-amplify';
-import { listNetworks } from './graphql/queries';
+import {listNetworks} from './graphql/queries';
 
 import {
   useNavigate
@@ -13,22 +13,12 @@ export function Home() {
   const navigate = useNavigate();
   const [platforms, setPlatforms] = useState([]);
 
-  useEffect( async () => {
-    const networkData = await API.graphql({
-      query: listNetworks,
-      authMode: "AWS_IAM"
-    });
-    console.log('networkData', networkData);
-
-    // API.get('GoMetaRail', '/platform', {
-    //   authMode: 'AWS_IAM'
-    // })
-    //   .then((data) => {
-    //     // setPlatforms(data['Items']);
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //   });
+  API.graphql({
+    query: listNetworks
+  }).then((res) => {
+    setPlatforms(res.data.listNetworks.items);
+  }).catch((err) => {
+    console.error(err);
   });
 
   return (
@@ -41,7 +31,8 @@ export function Home() {
               <p>Category: {platform.category}</p>
               <p>Description:<br/>{platform.description}</p>
             </div>
-            <Button variation="primary" onClick={() => navigate(`/edit/${platform.category}/${platform.name}`)}>Edit</Button>
+            <Button variation="primary"
+                    onClick={() => navigate(`/edit/${platform.category}/${platform.name}`)}>Edit</Button>
           </div>
         );
       })}

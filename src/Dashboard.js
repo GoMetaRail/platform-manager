@@ -23,23 +23,8 @@ import Home from "./Home";
 import EditPlatform from "./EditPlatform";
 
 Amplify.configure({
-  ...awsExports,
-  // aws_cloud_logic_custom: [
-  //   {
-  //     name: 'GoMetaRail',
-  //     endpoint: 'https://ovif3ncu01.execute-api.us-east-2.amazonaws.com/dev',
-  //     region: 'us-east-2',
-  //     custom_header: async () => {
-  //       return {
-  //         Authorization: `Bearer ${(await  Auth.currentSession()).getIdToken().getJwtToken()}`
-  //       }
-  //     }
-  //   }
-  // ],
-  // aws_appsync_authenticationType: 'API_KEY',
-  // aws_appsync_apiKey: 'K5UkJ7Jgu3aHXTnsDRYHjarywILS5Al37NnO4yr5'
+  ...awsExports
 });
-// Amplify.configure(awsExports);
 
 function Dashboard({ isPassedToWithAuthenticator, signOut, user }) {
   return (
@@ -100,6 +85,6 @@ function Dashboard({ isPassedToWithAuthenticator, signOut, user }) {
   );
 }
 
-export default Dashboard; /*withAuthenticator(Dashboard, {
+export default withAuthenticator(Dashboard, {
   hideSignUp: true
-});*/
+});

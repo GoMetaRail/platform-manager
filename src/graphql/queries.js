@@ -61,6 +61,56 @@ export const listPlatforms = /* GraphQL */ `
     }
   }
 `;
+export const searchPlatforms = /* GraphQL */ `
+  query SearchPlatforms(
+    $filter: SearchablePlatformFilterInput
+    $sort: [SearchablePlatformSortInput]
+    $limit: Int
+    $nextToken: String
+    $from: Int
+    $aggregates: [SearchablePlatformAggregationInput]
+  ) {
+    searchPlatforms(
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      nextToken: $nextToken
+      from: $from
+      aggregates: $aggregates
+    ) {
+      items {
+        id
+        name
+        description
+        domain
+        iconImage
+        images
+        url
+        createdAt
+        updatedAt
+        categoryPlatformsId
+        networkPlatformsId
+        owner
+      }
+      nextToken
+      total
+      aggregateItems {
+        name
+        result {
+          ... on SearchableAggregateScalarResult {
+            value
+          }
+          ... on SearchableAggregateBucketResult {
+            buckets {
+              key
+              doc_count
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 export const getCategory = /* GraphQL */ `
   query GetCategory($id: ID!) {
     getCategory(id: $id) {
@@ -91,6 +141,48 @@ export const listCategories = /* GraphQL */ `
     }
   }
 `;
+export const searchCategories = /* GraphQL */ `
+  query SearchCategories(
+    $filter: SearchableCategoryFilterInput
+    $sort: [SearchableCategorySortInput]
+    $limit: Int
+    $nextToken: String
+    $from: Int
+    $aggregates: [SearchableCategoryAggregationInput]
+  ) {
+    searchCategories(
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      nextToken: $nextToken
+      from: $from
+      aggregates: $aggregates
+    ) {
+      items {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+      nextToken
+      total
+      aggregateItems {
+        name
+        result {
+          ... on SearchableAggregateScalarResult {
+            value
+          }
+          ... on SearchableAggregateBucketResult {
+            buckets {
+              key
+              doc_count
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 export const getTag = /* GraphQL */ `
   query GetTag($id: ID!) {
     getTag(id: $id) {
@@ -118,6 +210,48 @@ export const listTags = /* GraphQL */ `
         updatedAt
       }
       nextToken
+    }
+  }
+`;
+export const searchTags = /* GraphQL */ `
+  query SearchTags(
+    $filter: SearchableTagFilterInput
+    $sort: [SearchableTagSortInput]
+    $limit: Int
+    $nextToken: String
+    $from: Int
+    $aggregates: [SearchableTagAggregationInput]
+  ) {
+    searchTags(
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      nextToken: $nextToken
+      from: $from
+      aggregates: $aggregates
+    ) {
+      items {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+      nextToken
+      total
+      aggregateItems {
+        name
+        result {
+          ... on SearchableAggregateScalarResult {
+            value
+          }
+          ... on SearchableAggregateBucketResult {
+            buckets {
+              key
+              doc_count
+            }
+          }
+        }
+      }
     }
   }
 `;
@@ -152,6 +286,50 @@ export const listNetworks = /* GraphQL */ `
         updatedAt
       }
       nextToken
+    }
+  }
+`;
+export const searchNetworks = /* GraphQL */ `
+  query SearchNetworks(
+    $filter: SearchableNetworkFilterInput
+    $sort: [SearchableNetworkSortInput]
+    $limit: Int
+    $nextToken: String
+    $from: Int
+    $aggregates: [SearchableNetworkAggregationInput]
+  ) {
+    searchNetworks(
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      nextToken: $nextToken
+      from: $from
+      aggregates: $aggregates
+    ) {
+      items {
+        id
+        name
+        config
+        method
+        createdAt
+        updatedAt
+      }
+      nextToken
+      total
+      aggregateItems {
+        name
+        result {
+          ... on SearchableAggregateScalarResult {
+            value
+          }
+          ... on SearchableAggregateBucketResult {
+            buckets {
+              key
+              doc_count
+            }
+          }
+        }
+      }
     }
   }
 `;
