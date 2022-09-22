@@ -1,4 +1,4 @@
-type Platform @model @auth(rules: [
+type Platform @model @searchable @auth(rules: [
     { allow: groups, groups: ["Admin"] }
     { allow: private, operations: [read]}
     { allow: owner, operations: [read, update] }
@@ -17,7 +17,7 @@ type Platform @model @auth(rules: [
     url: String!
 }
 
-type Category @model @auth(rules: [
+type Category @model @searchable @auth(rules: [
     { allow: groups, groups: ["Admin"] }
     { allow: private, operations: [read]}
     { allow: public, operations: [read], provider: iam}
@@ -28,7 +28,7 @@ type Category @model @auth(rules: [
     platforms: [Platform] @hasMany
 }
 
-type Tag @model @auth(rules: [
+type Tag @model @searchable @auth(rules: [
     { allow: groups, groups: ["Admin"] }
     { allow: private, operations: [read]}
     { allow: public, operations: [read], provider: iam}
@@ -39,7 +39,7 @@ type Tag @model @auth(rules: [
     platforms: [Platform] @manyToMany(relationName: "PlatformTags")
 }
 
-type Network @model @auth(rules: [
+type Network @model @searchable @auth(rules: [
     { allow: groups, groups: ["Admin"] }
     { allow: private, operations: [read]}
     { allow: public, operations: [read], provider: iam}
