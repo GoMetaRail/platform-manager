@@ -8,7 +8,7 @@ const clientSchemaExtensions = gql`
         mutations: ModelMutationMap
         subscriptions: ModelSubscriptionMap
         timestamps: TimestampConfiguration
-    ) on OBJECT
+    ) repeatable on OBJECT
     input ModelMutationMap {
         create: String
         update: String
@@ -42,7 +42,7 @@ const clientSchemaExtensions = gql`
     ) repeatable on OBJECT
 
     # https://docs.amplify.aws/cli-legacy/graphql-transformer/auth/#definition
-    directive @auth(rules: [AuthRule!]!) on OBJECT | FIELD_DEFINITION
+    directive @auth(rules: [AuthRule!]!) repeatable on OBJECT | FIELD_DEFINITION
     input AuthRule {
         allow: AuthStrategy!
         provider: AuthProvider
