@@ -22,14 +22,6 @@
         "AdminQueries5455baee": {
           "deploymentBucketName": "amplify-platformmanager-dev-142115-deployment",
           "s3Key": "amplify-builds/AdminQueries5455baee-4976444e464b5455674b-build.zip"
-        },
-        "GoMetaRailApiAuth": {
-          "deploymentBucketName": "amplify-platformmanager-dev-142115-deployment",
-          "s3Key": "amplify-builds/GoMetaRailApiAuth-3831376365746f756164-build.zip"
-        },
-        "gmrPlatform": {
-          "deploymentBucketName": "amplify-platformmanager-dev-142115-deployment",
-          "s3Key": "amplify-builds/gmrPlatform-495237636e6a7a55772f-build.zip"
         }
       }
     }

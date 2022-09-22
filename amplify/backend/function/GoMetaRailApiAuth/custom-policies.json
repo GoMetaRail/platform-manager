@@ -1,6 +1,0 @@
-[
-  {
-    "Action": ["lambda:InvokeFunction"],
-    "Resource": ["arn:aws:execute-api:us-east-2:777849778645:3klccpkf1j/authorizers/xgwulo"]
-  }
-]

@@ -19,18 +19,6 @@ export type AmplifyDependentResourcesAttributes = {
             "Arn": "string",
             "Region": "string",
             "LambdaExecutionRole": "string"
-        },
-        "GoMetaRailApiAuth": {
-            "Name": "string",
-            "Arn": "string",
-            "Region": "string",
-            "LambdaExecutionRole": "string"
-        },
-        "gmrPlatform": {
-            "Name": "string",
-            "Arn": "string",
-            "Region": "string",
-            "LambdaExecutionRole": "string"
         }
     },
     "api": {
@@ -40,7 +28,6 @@ export type AmplifyDependentResourcesAttributes = {
             "ApiId": "string"
         },
         "GoMetaRail": {
-            "GraphQLAPIKeyOutput": "string",
             "GraphQLAPIIdOutput": "string",
             "GraphQLAPIEndpointOutput": "string"
         }
@@ -48,14 +35,6 @@ export type AmplifyDependentResourcesAttributes = {
     "storage": {
         "s3platformmanager": {
             "BucketName": "string",
-            "Region": "string"
-        },
-        "GmrPlatform": {
-            "Name": "string",
-            "Arn": "string",
-            "StreamArn": "string",
-            "PartitionKeyName": "string",
-            "PartitionKeyType": "string",
             "Region": "string"
         }
     }

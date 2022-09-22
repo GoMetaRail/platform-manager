@@ -8,7 +8,7 @@ import awsExports from "./aws-exports";
 
 Amplify.configure({
   ...awsExports,
-  aws_cloud_logic_custom: [
+  /*aws_cloud_logic_custom: [
     {
       name: 'GoMetaRail',
       endpoint: 'https://ovif3ncu01.execute-api.us-east-2.amazonaws.com/dev',
@@ -21,11 +21,15 @@ Amplify.configure({
     }
   ],
   aws_appsync_authenticationType: 'API_KEY',
-  aws_appsync_apiKey: 'K5UkJ7Jgu3aHXTnsDRYHjarywILS5Al37NnO4yr5'
+  aws_appsync_apiKey: 'K5UkJ7Jgu3aHXTnsDRYHjarywILS5Al37NnO4yr5'*/
 });
+import * as queries from './graphql/schema.json';
 
 function App() {
-  useEffect(() => {
+  useEffect(async () => {
+    const allTodos = await API.graphql({ query: queries });
+
+
     // API.get('GoMetaRail', '/platform', {
     //   authMode: 'AWS_IAM'
     // })

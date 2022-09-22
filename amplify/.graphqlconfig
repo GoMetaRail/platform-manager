@@ -1,9 +1,1 @@
-{
-  "schemaPath": "schema.graphql",
-  "includes": [
-    "*"
-  ],
-  "extensions": {
-    "endpoints": {}
-  }
-}
+{"schemaPath":"schema.graphql","includes":["*"],"extensions":{"endpoints":{},"amplify":{"version":3}},"projects":{"GoMetaRail":{"schemaPath":"../src/graphql/schema.json","includes":["src/graphql/**/*.js"],"excludes":["./amplify/**"],"extensions":{"amplify":{"codeGenTarget":"javascript","generatedFileName":"","docsFilePath":"src/graphql"}}}}}
