@@ -23,11 +23,11 @@ Amplify.configure({
   aws_appsync_authenticationType: 'API_KEY',
   aws_appsync_apiKey: 'K5UkJ7Jgu3aHXTnsDRYHjarywILS5Al37NnO4yr5'*/
 });
-import * as queries from './graphql/schema.json';
+// import * as queries from './graphql/schema.json';
 
 function App() {
-  useEffect(async () => {
-    const allTodos = await API.graphql({ query: queries });
+  useEffect( () => {
+    // const allTodos = await API.graphql({ query: queries });
 
 
     // API.get('GoMetaRail', '/platform', {

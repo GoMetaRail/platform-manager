@@ -3,6 +3,7 @@ type Platform @model @auth(rules: [
     { allow: private, operations: [read]}
     { allow: owner, operations: [read, update] }
     { allow: public, operations: [read], provider: iam}
+    { allow: public, operations: [read], provider: apiKey}
 ]) {
     id: ID!
     name: String!
@@ -20,6 +21,7 @@ type Category @model @auth(rules: [
     { allow: groups, groups: ["Admin"] }
     { allow: private, operations: [read]}
     { allow: public, operations: [read], provider: iam}
+    { allow: public, operations: [read], provider: apiKey}
 ]) {
     id: ID!
     name: String!
@@ -30,6 +32,7 @@ type Tag @model @auth(rules: [
     { allow: groups, groups: ["Admin"] }
     { allow: private, operations: [read]}
     { allow: public, operations: [read], provider: iam}
+    { allow: public, operations: [read], provider: apiKey}
 ]) {
     id: ID!
     name: String!
@@ -40,6 +43,7 @@ type Network @model @auth(rules: [
     { allow: groups, groups: ["Admin"] }
     { allow: private, operations: [read]}
     { allow: public, operations: [read], provider: iam}
+    { allow: public, operations: [read], provider: apiKey}
 ]) {
     id: ID!
     name: String!

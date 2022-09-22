@@ -2,7 +2,8 @@ import React, {useState, useEffect} from 'react';
 import {
   Button
 } from '@aws-amplify/ui-react';
-import {API} from 'aws-amplify';
+import {API, graphqlOperation} from 'aws-amplify';
+import { listNetworks } from './graphql/queries';
 
 import {
   useNavigate
@@ -12,16 +13,22 @@ export function Home() {
   const navigate = useNavigate();
   const [platforms, setPlatforms] = useState([]);
 
-  useEffect(() => {
-    API.get('GoMetaRail', '/platform', {
-      authMode: 'AWS_IAM'
-    })
-      .then((data) => {
-        // setPlatforms(data['Items']);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+  useEffect( async () => {
+    const networkData = await API.graphql({
+      query: listNetworks,
+      authMode: "AWS_IAM"
+    });
+    console.log('networkData', networkData);
+
+    // API.get('GoMetaRail', '/platform', {
+    //   authMode: 'AWS_IAM'
+    // })
+    //   .then((data) => {
+    //     // setPlatforms(data['Items']);
+    //   })
+    //   .catch((err) => {
+    //     console.error(err);
+    //   });
   });
 
   return (

@@ -28,6 +28,7 @@ export type AmplifyDependentResourcesAttributes = {
             "ApiId": "string"
         },
         "GoMetaRail": {
+            "GraphQLAPIKeyOutput": "string",
             "GraphQLAPIIdOutput": "string",
             "GraphQLAPIEndpointOutput": "string"
         }
