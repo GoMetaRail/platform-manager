@@ -1,61 +1,67 @@
 {
-  "dev": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-platformmanager-dev-142115-authRole",
-      "UnauthRoleArn": "arn:aws:iam::777849778645:role/amplify-platformmanager-dev-142115-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::777849778645:role/amplify-platformmanager-dev-142115-authRole",
-      "Region": "us-east-2",
-      "DeploymentBucketName": "amplify-platformmanager-dev-142115-deployment",
-      "UnauthRoleName": "amplify-platformmanager-dev-142115-unauthRole",
-      "StackName": "amplify-platformmanager-dev-142115",
-      "StackId": "arn:aws:cloudformation:us-east-2:777849778645:stack/amplify-platformmanager-dev-142115/e6804c00-36bd-11ed-9aa7-0a18c39b4f32",
-      "AmplifyAppId": "dhbsw6mxl75jz",
-      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-platformmanager-dev-142115-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-platformmanager-dev-142115-authRole",
+            "UnauthRoleArn": "arn:aws:iam::777849778645:role/amplify-platformmanager-dev-142115-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::777849778645:role/amplify-platformmanager-dev-142115-authRole",
+            "Region": "us-east-2",
+            "DeploymentBucketName": "amplify-platformmanager-dev-142115-deployment",
+            "UnauthRoleName": "amplify-platformmanager-dev-142115-unauthRole",
+            "StackName": "amplify-platformmanager-dev-142115",
+            "StackId": "arn:aws:cloudformation:us-east-2:777849778645:stack/amplify-platformmanager-dev-142115/e6804c00-36bd-11ed-9aa7-0a18c39b4f32",
+            "AmplifyAppId": "dhbsw6mxl75jz",
+            "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-platformmanager-dev-142115-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
+        },
+        "categories": {
+            "auth": {
+                "UserAuth": {},
+                "userPoolGroups": {},
+                "true": {}
+            },
+            "function": {
+                "AdminQueries5455baee": {
+                    "deploymentBucketName": "amplify-platformmanager-dev-142115-deployment",
+                    "s3Key": "amplify-builds/AdminQueries5455baee-4976444e464b5455674b-build.zip"
+                }
+            }
+        }
     },
-    "categories": {
-      "auth": {
-        "UserAuth": {},
-        "userPoolGroups": {},
-        "true": {}
-      },
-      "function": {
-        "AdminQueries5455baee": {
-          "deploymentBucketName": "amplify-platformmanager-dev-142115-deployment",
-          "s3Key": "amplify-builds/AdminQueries5455baee-4976444e464b5455674b-build.zip"
+    "prod": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-platformmanager-prod-130413-authRole",
+            "UnauthRoleArn": "arn:aws:iam::777849778645:role/amplify-platformmanager-prod-130413-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::777849778645:role/amplify-platformmanager-prod-130413-authRole",
+            "Region": "us-east-2",
+            "DeploymentBucketName": "amplify-platformmanager-prod-130413-deployment",
+            "UnauthRoleName": "amplify-platformmanager-prod-130413-unauthRole",
+            "StackName": "amplify-platformmanager-prod-130413",
+            "StackId": "arn:aws:cloudformation:us-east-2:777849778645:stack/amplify-platformmanager-prod-130413/f7812dd0-3aa0-11ed-9b6c-0236ef4dfe8e",
+            "AmplifyAppId": "dhbsw6mxl75jz"
+        },
+        "categories": {
+            "auth": {
+                "userPoolGroups": {},
+                "UserAuth": {}
+            },
+            "api": {
+                "GoMetaRail": {
+                    "OpenSearchInstanceCount": 1,
+                    "OpenSearchInstanceType": "t2.medium.elasticsearch",
+                    "DynamoDBEnablePointInTimeRecovery": "true"
+                }
+            },
+            "function": {
+                "AdminQueries5455baee": {
+                    "deploymentBucketName": "amplify-platformmanager-prod-130413-deployment",
+                    "s3Key": "amplify-builds/AdminQueries5455baee-4976444e464b5455674b-build.zip"
+                }
+            },
+            "hosting": {
+                "amplifyhosting": {
+                    "appId": "dhbsw6mxl75jz",
+                    "type": "cicd"
+                }
+            }
         }
-      }
     }
-  },
-  "prod": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-platformmanager-prod-130413-authRole",
-      "UnauthRoleArn": "arn:aws:iam::777849778645:role/amplify-platformmanager-prod-130413-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::777849778645:role/amplify-platformmanager-prod-130413-authRole",
-      "Region": "us-east-2",
-      "DeploymentBucketName": "amplify-platformmanager-prod-130413-deployment",
-      "UnauthRoleName": "amplify-platformmanager-prod-130413-unauthRole",
-      "StackName": "amplify-platformmanager-prod-130413",
-      "StackId": "arn:aws:cloudformation:us-east-2:777849778645:stack/amplify-platformmanager-prod-130413/f7812dd0-3aa0-11ed-9b6c-0236ef4dfe8e",
-      "AmplifyAppId": "dhbsw6mxl75jz"
-    },
-    "categories": {
-      "auth": {
-        "userPoolGroups": {},
-        "UserAuth": {}
-      },
-      "api": {
-        "GoMetaRail": {
-          "OpenSearchInstanceCount": 1,
-          "OpenSearchInstanceType": "t2.medium.elasticsearch",
-          "DynamoDBEnablePointInTimeRecovery": "true"
-        }
-      },
-      "function": {
-        "AdminQueries5455baee": {
-          "deploymentBucketName": "amplify-platformmanager-prod-130413-deployment",
-          "s3Key": "amplify-builds/AdminQueries5455baee-4976444e464b5455674b-build.zip"
-        }
-      }
-    }
-  }
 }
