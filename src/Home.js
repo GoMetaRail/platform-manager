@@ -13,9 +13,11 @@ export function Home() {
   const [platforms, setPlatforms] = useState([]);
 
   useEffect(() => {
-    API.get('GoMetaRail', '/platform', {})
+    API.get('GoMetaRail', '/platform', {
+      authMode: 'AWS_IAM'
+    })
       .then((data) => {
-        setPlatforms(data['Items']);
+        // setPlatforms(data['Items']);
       })
       .catch((err) => {
         console.error(err);

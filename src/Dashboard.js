@@ -27,13 +27,11 @@ Amplify.configure({
   aws_cloud_logic_custom: [
     {
       name: 'GoMetaRail',
-      endpoint: 'https://api.dev.gometarail.io',
+      endpoint: 'https://ovif3ncu01.execute-api.us-east-2.amazonaws.com/dev',
       region: 'us-east-2',
       custom_header: async () => {
         return {
-          // todo: move this to env
-          'x-api-key': 'K5UkJ7Jgu3aHXTnsDRYHjarywILS5Al37NnO4yr5',
-          // Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`
+          Authorization: `Bearer ${(await  Auth.currentSession()).getIdToken().getJwtToken()}`
         }
       }
     }
@@ -41,6 +39,7 @@ Amplify.configure({
   aws_appsync_authenticationType: 'API_KEY',
   aws_appsync_apiKey: 'K5UkJ7Jgu3aHXTnsDRYHjarywILS5Al37NnO4yr5'
 });
+// Amplify.configure(awsExports);
 
 function Dashboard({ isPassedToWithAuthenticator, signOut, user }) {
   return (
@@ -101,6 +100,6 @@ function Dashboard({ isPassedToWithAuthenticator, signOut, user }) {
   );
 }
 
-export default withAuthenticator(Dashboard, {
+export default Dashboard; /*withAuthenticator(Dashboard, {
   hideSignUp: true
-});
+});*/

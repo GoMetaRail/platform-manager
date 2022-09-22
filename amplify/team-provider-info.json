@@ -9,18 +9,53 @@
       "UnauthRoleName": "amplify-platformmanager-dev-142115-unauthRole",
       "StackName": "amplify-platformmanager-dev-142115",
       "StackId": "arn:aws:cloudformation:us-east-2:777849778645:stack/amplify-platformmanager-dev-142115/e6804c00-36bd-11ed-9aa7-0a18c39b4f32",
-      "AmplifyAppId": "dhbsw6mxl75jz"
+      "AmplifyAppId": "dhbsw6mxl75jz",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-platformmanager-dev-142115-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
     },
     "categories": {
       "auth": {
         "UserAuth": {},
-        "userPoolGroups": {}
+        "userPoolGroups": {},
+        "true": {}
       },
       "function": {
         "AdminQueries5455baee": {
           "deploymentBucketName": "amplify-platformmanager-dev-142115-deployment",
           "s3Key": "amplify-builds/AdminQueries5455baee-4976444e464b5455674b-build.zip"
+        },
+        "GoMetaRailApiAuth": {
+          "deploymentBucketName": "amplify-platformmanager-dev-142115-deployment",
+          "s3Key": "amplify-builds/GoMetaRailApiAuth-3831376365746f756164-build.zip"
+        },
+        "gmrPlatform": {
+          "deploymentBucketName": "amplify-platformmanager-dev-142115-deployment",
+          "s3Key": "amplify-builds/gmrPlatform-495237636e6a7a55772f-build.zip"
         }
+      }
+    }
+  },
+  "prod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-platformmanager-prod-172943-authRole",
+      "UnauthRoleArn": "arn:aws:iam::777849778645:role/amplify-platformmanager-prod-172943-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::777849778645:role/amplify-platformmanager-prod-172943-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-platformmanager-prod-172943-deployment",
+      "UnauthRoleName": "amplify-platformmanager-prod-172943-unauthRole",
+      "StackName": "amplify-platformmanager-prod-172943",
+      "StackId": "arn:aws:cloudformation:us-east-2:777849778645:stack/amplify-platformmanager-prod-172943/e4448130-39fc-11ed-bc50-06fa93597102",
+      "AmplifyAppId": "dhbsw6mxl75jz"
+    },
+    "categories": {
+      "auth": {
+        "userPoolGroups": {},
+        "UserAuth": {}
+      },
+      "function": {
+        "AdminQueries5455baee": {},
+        "GoMetaRailApiAuth": {},
+        "gmrPlatform": {},
+        "gmrPlatform2": {}
       }
     }
   }

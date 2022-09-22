@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "GoMetaRail",
+    "serviceName": "AppSync",
+    "defaultAuthType": {
+      "mode": "API_KEY",
+      "expirationTime": 7,
+      "apiKeyExpirationDate": "2022-09-29T01:37:35.469Z",
+      "keyDescription": ""
+    }
+  }
+}

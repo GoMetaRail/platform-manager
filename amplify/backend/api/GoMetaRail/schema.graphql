@@ -1,0 +1,35 @@
+# This "input" configures a global authorization rule to enable public access to
+# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
+input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
+
+type Platform @model {
+  id: ID!
+  name: String!
+  category: Category @connection(keyName: "CategoryPlatforms")
+  description: String
+  tags: [Tag!] @connection(keyName: "PlatformTags")
+  domain: String!
+  iconImage: String
+  images: [String!]
+  network: Network @connection(keyName: "NetworkPlatforms")
+  url: String!
+}
+
+type Category @model {
+  id: ID!
+  name: String!
+  platforms: [Platform] @connection(keyName: "CategoryPlatforms")
+}
+
+type Tag @model {
+  id: ID!
+  name: String!
+  platforms: [Platform] @connection(keyName: "PlatformTags")
+}
+
+type Network @model {
+  id: ID!
+  name: String!
+  config: String!
+  platforms: [Platform] @connection(keyName: "NetworkPlatforms")
+}
