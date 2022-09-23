@@ -20,8 +20,9 @@ import {withAuthenticator} from '@aws-amplify/ui-react';
 import awsExports from "./aws-exports";
 
 import Home from "./Home";
-import EditPlatform from "./EditPlatform";
 import Networks from "./Networks";
+import Categories from "./Categories";
+import Tags from "./Tags";
 
 Amplify.configure({
   ...awsExports
@@ -69,9 +70,10 @@ function Dashboard({ isPassedToWithAuthenticator, signOut, user }) {
           columnEnd="2"
           id="sidebarMenu"
         >
-          <NavLink to="/" end>Platforms</NavLink>
+          {/*<NavLink to="/" end>Platforms</NavLink>*/}
+          <NavLink to="/category/">Categories</NavLink>
+          <NavLink to="/tag/">Tags</NavLink>
           <NavLink to="/network/">Networks</NavLink>
-          {/*<NavLink to="/category">Categories</NavLink>*/}
           {/*<NavLink to="/tag">Tags</NavLink>*/}
         </Card>
         <Card
@@ -81,7 +83,8 @@ function Dashboard({ isPassedToWithAuthenticator, signOut, user }) {
           <Routes>
             <Route path="/" element={<Home/>}/>
             <Route path="/network/*" element={<Networks/>}/>
-            <Route path="/edit/:id" element={<EditPlatform/>}/>
+            <Route path="/category/*" element={<Categories/>}/>
+            <Route path="/tag/*" element={<Tags/>}/>
           </Routes>
         </Card>
       </Grid>
