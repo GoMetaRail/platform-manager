@@ -3,17 +3,32 @@
 #sidebarMenu a.hover,
 #sidebarMenu a.focus,
 #sidebarMenu a.visited {
-  display: block;
-  padding: 10px;
-  text-decoration: none;
-  color: black;
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
 }
 
 #sidebarMenu a.active,
 #sidebarMenu a.hover,
 #sidebarMenu a.focus,
-#sidebarMenu a.visited
-{
-  background: var(--amplify-components-button-menu-active-background-color);
-  color: white;
+#sidebarMenu a.visited {
+    background: var(--amplify-components-button-menu-active-background-color);
+    color: white;
+}
+
+.amplify-loader--large {
+    width: 200px;
+    margin-top: 75px;
+}
+
+.alertsContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.alertsContainer .amplify-alert {
+    margin-bottom: 5px;
 }

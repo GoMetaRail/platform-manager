@@ -3,7 +3,7 @@ import {
   Button
 } from '@aws-amplify/ui-react';
 import {API, graphqlOperation} from 'aws-amplify';
-import {listNetworks} from './graphql/queries';
+import {listPlatforms} from "./graphql/queries";
 
 import {
   useNavigate
@@ -13,13 +13,14 @@ export function Home() {
   const navigate = useNavigate();
   const [platforms, setPlatforms] = useState([]);
 
-  API.graphql({
-    query: listNetworks
-  }).then((res) => {
-    setPlatforms(res.data.listNetworks.items);
-  }).catch((err) => {
-    console.error(err);
-  });
+  useEffect(() => {
+    fetchPlatforms();
+  }, []);
+
+  async function fetchPlatforms() {
+    const apiData = await API.graphql({query: listPlatforms});
+    setPlatforms(apiData.data.listPlatforms.items);
+  }
 
   return (
     <div>
