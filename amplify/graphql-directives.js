@@ -90,7 +90,7 @@ const clientSchemaExtensions = gql`
 
     # https://docs.amplify.aws/cli-legacy/graphql-transformer/searchable/#definition
     # Streams data from DynamoDB to OpenSearch and exposes search capabilities.
-    directive @searchable(queries: SearchableQueryMap) on OBJECT
+    directive @searchable(queries: SearchableQueryMap) repeatable on OBJECT
     input SearchableQueryMap { search: String }
 
     # https://docs.amplify.aws/cli-legacy/graphql-transformer/versioned/#definition

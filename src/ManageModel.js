@@ -12,7 +12,7 @@ import {
 } from 'react-router-dom';
 
 function Update(props) {
-  const {pushAlert, baseRoute, itemNameSingular, itemNamePlural, itemFields, id} = props;
+  const {pushAlert, clearAlerts, baseRoute, itemNameSingular, itemNamePlural, itemFields, id} = props;
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -43,6 +43,7 @@ function Update(props) {
 
   async function saveitem() {
     setIsSaving(true);
+    clearAlerts('error');
     try {
       if (item.id) {
         const apiData = await API.graphql(graphqlOperation(mutation[`update${itemNameSingular}`], {
@@ -66,6 +67,7 @@ function Update(props) {
         setitem(apiData.data[`create${itemNameSingular}`]);
       }
       navigate(baseRoute);
+
       pushAlert(`item ${item.id ? 'updated' : 'added'}`, 'success');
     } catch (e) {
       console.error(e);
@@ -79,7 +81,7 @@ function Update(props) {
 
   async function deleteItem() {
     setIsLoading(true);
-
+    clearAlerts('error');
     try {
       const apiData = await API.graphql(graphqlOperation(mutation[`delete${itemNameSingular}`], {
         input: {
@@ -114,9 +116,10 @@ function Update(props) {
               itemFields.map((field) => {
                 return (
                   <Card>
-                    <field.type isRequired={field.required} isDisabled={isSaving} autoComplete="off" label={field.label} value={item[field.name]}
-                               name={field.name}
-                               onChange={handleInputChange}/>
+                    <field.type isRequired={field.required} isDisabled={isSaving} autoComplete="off" label={field.label}
+                                value={item[field.name]}
+                                name={field.name}
+                                onChange={handleInputChange}/>
                   </Card>
                 );
               })
@@ -180,7 +183,7 @@ function List(props) {
               <Card>
                 {
                   itemFields.map((field) => {
-                    if(field.showInList) {
+                    if (field.showInList) {
                       return (
                         <p>{item[field.name]}</p>
                       )
@@ -205,22 +208,38 @@ function ManageModel(baseRoute, itemNameSingular, itemNamePlural, itemFields) {
   const [alerts, setAlerts] = useState([]);
 
   function pushAlert(message, type) {
+    if (!message) return;
+
     if (type !== 'error') {
       setTimeout(() => {
-        setAlerts((alerts) => {
-          return alerts.filter(item => (Date.now() - item.createdDate) < 3000);
+        setAlerts(a => {
+          return a.filter(item => item.type !== 'error' && (Date.now() - item.createdDate) < 3000);
         });
       }, 3000);
     }
 
-    setAlerts([
-      ...alerts,
-      {
+    setAlerts(a => {
+      /*a({
         message: message,
-        type,
+        type: type ?? 'info',
         createdDate: Date.now()
-      }
-    ]);
+      })*/
+
+      return [
+        ...a,
+        {
+          message: message,
+          type: type ?? 'info',
+          createdDate: Date.now()
+        }
+      ];
+    });
+  }
+
+  function clearAlerts(type) {
+    setAlerts((alerts) => {
+      return alerts.filter(item => item.type !== type);
+    });
   }
 
   useEffect(() => {
@@ -263,7 +282,7 @@ function ManageModel(baseRoute, itemNameSingular, itemNamePlural, itemFields) {
       <div className={'alertsContainer'}>
         {alerts.map((alert, index) => {
           return (
-            <Alert key={alert.id} isDismissible={true} variation={alert.type || 'info'}>
+            <Alert key={alert.id} isDismissible={true} variation={alert.type}>
               <span>{alert.message}</span>
             </Alert>
           );
@@ -281,6 +300,7 @@ function ManageModel(baseRoute, itemNameSingular, itemNamePlural, itemFields) {
       {state === 'create' && (
         <Update
           pushAlert={pushAlert}
+          clearAlerts={clearAlerts}
           baseRoute={baseRoute}
           itemNameSingular={itemNameSingular}
           itemNamePlural={itemNamePlural}
@@ -290,6 +310,7 @@ function ManageModel(baseRoute, itemNameSingular, itemNamePlural, itemFields) {
         <Update
           id={itemId}
           pushAlert={pushAlert}
+          clearAlerts={clearAlerts}
           baseRoute={baseRoute}
           itemNameSingular={itemNameSingular}
           itemNamePlural={itemNamePlural}

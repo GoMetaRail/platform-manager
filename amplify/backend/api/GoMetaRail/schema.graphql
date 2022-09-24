@@ -7,13 +7,13 @@ type Platform @model @searchable @auth(rules: [
 ]) {
     id: ID!
     name: String!
-    category: Category @belongsTo
+    category: Category! @belongsTo
     description: String
     tags: [Tag!] @manyToMany(relationName: "PlatformTags")
     domain: String!
-    iconImage: String
+    iconImage: String!
     images: [String!]
-    network: Network @belongsTo
+    network: Network! @belongsTo
     url: String!
 }
 
