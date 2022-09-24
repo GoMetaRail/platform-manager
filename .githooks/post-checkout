@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -e
+
+printf '\npost-checkout hook\n\n'
+
+prevHEAD=$1
+newHEAD=$2
+checkoutType=$3
+
+if [ "$newHEAD" = "main" ]; then
+  amplify checkout env prod
+elif [ "$newHEAD" = "stage" ]; then
+  amplify checkout env stage
+elif [ "$newHEAD" = "test" ]; then
+  amplify checkout env test
+else
+  amplify checkout env dev
+fi

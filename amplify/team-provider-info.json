@@ -23,6 +23,12 @@
           "deploymentBucketName": "amplify-platformmanager-dev-142115-deployment",
           "s3Key": "amplify-builds/AdminQueries5455baee-4976444e464b5455674b-build.zip"
         }
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "dhbsw6mxl75jz",
+          "type": "cicd"
+        }
       }
     }
   },
