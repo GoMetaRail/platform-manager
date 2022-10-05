@@ -32,3 +32,24 @@
 .alertsContainer .amplify-alert {
     margin-bottom: 5px;
 }
+
+.typeahead-input-has-results {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.typeahead-results {
+    position: relative;
+    top: -1px;
+    flex-flow: column;
+    gap: 0;
+}
+.typeahead-list-item {
+    border-bottom-width: 0;
+    border-radius: 0;
+}
+.typeahead-list-item:first-child {
+}
+.typeahead-list-item:last-child {
+    border-bottom-width: 1px !important;
+}
