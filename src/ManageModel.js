@@ -16,7 +16,7 @@ function Update(props) {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [item, setitem] = useState({});
+  const [item, setItem] = useState({});
 
   useEffect(() => {
     fetchitem();
@@ -25,17 +25,30 @@ function Update(props) {
   async function fetchitem() {
     if (props.id) {
       const apiData = await API.graphql(graphqlOperation(query[`get${itemNameSingular}`], {id: props.id}));
-      setitem(apiData.data[`get${itemNameSingular}`]);
+      const newItem = apiData.data[`get${itemNameSingular}`];
+
+      for (const field of itemFields) {
+        if (field.manyToMany) {
+          const relQuery = {};
+          relQuery[`${itemNameSingular.toLowerCase()}ID`] = props.id;
+          const relApiData = await API.graphql(graphqlOperation(query[`list${field.manyToMany.relationship}`], relQuery));
+          const relItems = relApiData.data[`list${field.manyToMany.relationship}`].items;
+
+          newItem[field.name] = relItems.map(i => i[field.manyToMany.id]);
+        }
+      }
+      setItem(newItem);
     }
     setIsLoading(false);
   }
 
   const handleInputChange = (event) => {
+    console.log('inputChange', event);
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const fieldName = target.name;
 
-    setitem({
+    setItem({
       ...item,
       [fieldName]: value
     });
@@ -45,35 +58,70 @@ function Update(props) {
     setIsSaving(true);
     clearAlerts('error');
     try {
+      // Check for required fields
+      const missingRequiredFields = itemFields.filter(field => {
+        return field.required && (
+          item[field.name] === ''
+          || typeof item[field.name] === 'undefined'
+          || item[field.name] === null
+        );
+      });
+
+      if (missingRequiredFields.length > 0) {
+        missingRequiredFields.forEach(field => pushAlert(`${field.label} is required`, 'error'));
+        return;
+      }
+
+      const sanitizedItem = {};
+      itemFields.forEach(field => {
+        if (field.manyToMany) {
+          return;
+        }
+
+        if (field.belongsTo && item[field.name].id) {
+          sanitizedItem[field.belongsTo] = item[field.name].id;
+        } else {
+          sanitizedItem[field.name] = item[field.name];
+        }
+        console.log(sanitizedItem);
+      });
+
       if (item.id) {
+        sanitizedItem['id'] = item.id;
         const apiData = await API.graphql(graphqlOperation(mutation[`update${itemNameSingular}`], {
-            input: {
-              id: item.id,
-              config: item.config,
-              method: item.method,
-              name: item.name
-            }
+            input: sanitizedItem
           }
         ));
       } else {
         const apiData = await API.graphql(graphqlOperation(mutation[`create${itemNameSingular}`], {
-            input: {
-              config: item.config,
-              method: item.method,
-              name: item.name
-            }
+            input: sanitizedItem
           }
         ));
-        setitem(apiData.data[`create${itemNameSingular}`]);
+        const newItem = apiData.data[`create${itemNameSingular}`];
+
+        itemFields.forEach(field => {
+          if (field.manyToMany) {
+            // Create join table entries
+            item[field.name].forEach(async id => {
+              const relationObj = {};
+              relationObj[field.manyToMany.id] = id;
+              relationObj[`${itemNameSingular.toLowerCase()}ID`] = newItem.id;
+              console.log(relationObj);
+              await API.graphql(graphqlOperation(mutation[`create${field.manyToMany.relationship}`], {
+                input: relationObj
+              }));
+            });
+          }
+        });
+
+        setItem(newItem);
       }
       navigate(baseRoute);
 
       pushAlert(`item ${item.id ? 'updated' : 'added'}`, 'success');
     } catch (e) {
       console.error(e);
-      pushAlert(e.errors.forEach((error) => {
-        pushAlert(error.message, 'error');
-      }));
+      e.errors.forEach(error => pushAlert(error.message, 'error'));
     } finally {
       setIsSaving(false);
     }

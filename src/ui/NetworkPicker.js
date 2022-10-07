@@ -2,13 +2,13 @@ import React from 'react';
 import 'react-select-search/style.css';
 import ModelPicker from "./ModelPicker";
 
-function CategoryPicker(props) {
+function NetworkPicker(props) {
   return ModelPicker({
     ...props,
     maxLength: 1,
-    itemNameSingular: 'Category',
-    itemNamePlural: 'Categories'
+    itemNameSingular: 'Network',
+    itemNamePlural: 'Networks'
   });
 }
 
-export default CategoryPicker;
+export default NetworkPicker;

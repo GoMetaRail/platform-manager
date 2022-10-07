@@ -2,13 +2,13 @@ import React from 'react';
 import 'react-select-search/style.css';
 import ModelPicker from "./ModelPicker";
 
-function CategoryPicker(props) {
+function TagPicker(props) {
   return ModelPicker({
     ...props,
-    maxLength: 1,
-    itemNameSingular: 'Category',
-    itemNamePlural: 'Categories'
+    maxLength: 3,
+    itemNameSingular: 'Tag',
+    itemNamePlural: 'Tags'
   });
 }
 
-export default CategoryPicker;
+export default TagPicker;

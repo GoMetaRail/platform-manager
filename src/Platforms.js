@@ -2,6 +2,8 @@ import React from 'react';
 import ManageModel from "./ManageModel";
 import {TextAreaField, TextField} from "@aws-amplify/ui-react";
 import CategoryPicker from "./ui/CategoryPicker";
+import TagPicker from "./ui/TagPicker";
+import NetworkPicker from "./ui/NetworkPicker";
 
 function Page() {
   return ManageModel(
@@ -27,13 +29,18 @@ function Page() {
         label: 'Category',
         required: true,
         type: CategoryPicker,
-        showInList: true
+        showInList: true,
+        belongsTo: 'categoryPlatformsId'
       },
       {
         name: 'tags',
         label: 'Tags',
-        type: TextField,
-        showInList: true
+        type: TagPicker,
+        showInList: true,
+        manyToMany: {
+          relationship: 'PlatformTags',
+          id: 'tagID'
+        }
       },
       {
         name: 'domain',
@@ -56,17 +63,19 @@ function Page() {
         type: TextField,
         showInList: true
       },
-      {
-        name: 'images',
-        label: 'Images',
-        type: TextField
-      },
+      // todo: add uploader
+      // {
+      //   name: 'images',
+      //   label: 'Images',
+      //   type: TextField
+      // },
       {
         name: 'network',
         label: 'Network',
         required: true,
-        type: TextField,
-        showInList: true
+        type: NetworkPicker,
+        showInList: true,
+        belongsTo: 'networkPlatformsId'
       }
     ]
   );
