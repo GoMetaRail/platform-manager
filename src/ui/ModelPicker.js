@@ -12,16 +12,41 @@ function ModelPicker(props) {
   let searchTimeout = null;
 
   useEffect(() => {
-    // todo: load IDs and show
-    console.log('hasValue', value);
-    if(value) {
+    if (value) {
       let tmpValue = value;
-      if(!Array.isArray(tmpValue)) {
+      if (!Array.isArray(tmpValue)) {
         tmpValue = [value];
       }
+
+      const unloadedIds = tmpValue.filter(i => typeof i === "string");
+      if(unloadedIds.length !== 0) {
+        // Load objects from ids
+        loadItems(unloadedIds);
+      }
+
+      // Display objects which are already loaded
       setSelected(tmpValue.filter(i => i.id));
     }
   }, []);
+
+  async function loadItems(ids) {
+    try {
+      const apiData = await API.graphql(graphqlOperation(query[`search${itemNamePlural}`], {
+        limit: ids.length,
+        filter: {
+          or: ids.map(eachId => {
+            return {
+              id: {eq: eachId}
+            }
+          }, ids)
+        }
+      }));
+      setSelected(apiData['data'][`search${itemNamePlural}`].items);
+      triggerOnChange(apiData['data'][`search${itemNamePlural}`].items);
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   function searchItems(q) {
     clearTimeout(searchTimeout);
@@ -43,7 +68,7 @@ function ModelPicker(props) {
 
   function triggerOnChange(newSelected) {
     let newValue = newSelected;
-    if(maxLength === 1) {
+    if (maxLength === 1) {
       newValue = newValue[0];
     }
 

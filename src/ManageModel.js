@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {
   Alert,
-  Button, Card, Flex, Grid, Heading, Loader, ScrollView, TextAreaField, TextField
+  Button, Card, Collection, Flex, Grid, Heading, Link, Loader, ScrollView, TextAreaField, TextField
 } from '@aws-amplify/ui-react';
 import {API, graphqlOperation} from 'aws-amplify';
 import * as query from "./graphql/queries";
@@ -16,6 +16,7 @@ function Update(props) {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [origItem, setOrigItem] = useState({});
   const [item, setItem] = useState({});
 
   useEffect(() => {
@@ -38,12 +39,13 @@ function Update(props) {
         }
       }
       setItem(newItem);
+      // Keep a copy of the original item for comparison
+      setOrigItem(newItem);
     }
     setIsLoading(false);
   }
 
   const handleInputChange = (event) => {
-    console.log('inputChange', event);
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const fieldName = target.name;
@@ -83,12 +85,13 @@ function Update(props) {
         } else {
           sanitizedItem[field.name] = item[field.name];
         }
-        console.log(sanitizedItem);
       });
 
+      let tmpItem = item;
       if (item.id) {
+        tmpItem = item;
         sanitizedItem['id'] = item.id;
-        const apiData = await API.graphql(graphqlOperation(mutation[`update${itemNameSingular}`], {
+        await API.graphql(graphqlOperation(mutation[`update${itemNameSingular}`], {
             input: sanitizedItem
           }
         ));
@@ -97,25 +100,40 @@ function Update(props) {
             input: sanitizedItem
           }
         ));
-        const newItem = apiData.data[`create${itemNameSingular}`];
-
-        itemFields.forEach(field => {
-          if (field.manyToMany) {
-            // Create join table entries
-            item[field.name].forEach(async id => {
-              const relationObj = {};
-              relationObj[field.manyToMany.id] = id;
-              relationObj[`${itemNameSingular.toLowerCase()}ID`] = newItem.id;
-              console.log(relationObj);
-              await API.graphql(graphqlOperation(mutation[`create${field.manyToMany.relationship}`], {
-                input: relationObj
-              }));
-            });
-          }
-        });
-
-        setItem(newItem);
+        tmpItem = apiData.data[`create${itemNameSingular}`];
       }
+
+      // Update join table entries
+      for (const field of itemFields) {
+        if (field.manyToMany) {
+          const origRelatedIds = origItem[field.name] ?? [];
+          for (const relatedItem of item[field.name]) {
+            const relationObj = {};
+            relationObj['id'] = `${tmpItem.id}|${relatedItem.id}`;
+            relationObj[field.manyToMany.id] = relatedItem.id;
+            relationObj[`${itemNameSingular.toLowerCase()}ID`] = tmpItem.id;
+            const createOrUpdate = origRelatedIds.includes(relatedItem.id) ? 'update' : 'create';
+            await API.graphql(graphqlOperation(mutation[`${createOrUpdate}${field.manyToMany.relationship}`], {
+              input: relationObj
+            }));
+          }
+
+          if (origRelatedIds.length !== 0) {
+            // Delete removed entries
+            const updatedIds = item[field.name].map(i => i.id);
+            const deletedIds = origRelatedIds.filter(i => !updatedIds.includes(i));
+            for (const deletedId of deletedIds) {
+              await API.graphql(graphqlOperation(mutation[`delete${field.manyToMany.relationship}`], {
+                input: {
+                  id: `${tmpItem.id}|${deletedId}`
+                }
+              }));
+            }
+          }
+        }
+      }
+      setItem(tmpItem);
+      setOrigItem(tmpItem);
       navigate(baseRoute);
 
       pushAlert(`item ${item.id ? 'updated' : 'added'}`, 'success');
@@ -131,6 +149,21 @@ function Update(props) {
     setIsLoading(true);
     clearAlerts('error');
     try {
+      // Delete join table entries
+      for (const field of itemFields) {
+        if (field.manyToMany) {
+          if (origItem[field.name]) {
+            for (const deletedId of origItem[field.name]) {
+              await API.graphql(graphqlOperation(mutation[`delete${field.manyToMany.relationship}`], {
+                input: {
+                  id: `${item.id}|${deletedId}`
+                }
+              }));
+            }
+          }
+        }
+      }
+
       const apiData = await API.graphql(graphqlOperation(mutation[`delete${itemNameSingular}`], {
         input: {
           id: item.id
@@ -161,9 +194,9 @@ function Update(props) {
             return false;
           }}>
             {
-              itemFields.map((field) => {
+              itemFields.map((field, index) => {
                 return (
-                  <Card>
+                  <Card key={index}>
                     <field.type isRequired={field.required} isDisabled={isSaving} autoComplete="off" label={field.label}
                                 value={item[field.name]}
                                 name={field.name}
@@ -225,24 +258,32 @@ function List(props) {
       {isLoading && (
         <Loader size="large"/>
       ) || (
-        items.map((item) => {
-          return (
-            <div>
-              <Card>
+        <Collection
+          items={items}
+          type="list"
+          direction="column"
+        >
+          {
+            (item, index) => (
+              <Card
+                key={item.id}
+              >
                 {
-                  itemFields.map((field) => {
+                  itemFields.map((field, index) => {
                     if (field.showInList) {
                       return (
-                        <p>{item[field.name]}</p>
+                        <p
+                          key={index}
+                        >{item[field.name]}</p>
                       )
                     }
                   })
                 }
                 <Button variation="primary" onClick={() => navigate(baseRoute + item.id)}>Edit</Button>
               </Card>
-            </div>
-          );
-        })
+            )
+          }
+        </Collection>
       )}
     </div>
   );
