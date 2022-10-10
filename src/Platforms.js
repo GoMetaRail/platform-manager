@@ -4,6 +4,7 @@ import {TextAreaField, TextField} from "@aws-amplify/ui-react";
 import CategoryPicker from "./ui/CategoryPicker";
 import TagPicker from "./ui/TagPicker";
 import NetworkPicker from "./ui/NetworkPicker";
+import IconImageUploader from "./ui/IconImageUploader";
 
 function Page() {
   return ManageModel(
@@ -60,7 +61,7 @@ function Page() {
         name: 'iconImage',
         label: 'Icon Image',
         required: true,
-        type: TextField,
+        type: IconImageUploader,
         showInList: true
       },
       // todo: add uploader
