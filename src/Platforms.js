@@ -59,16 +59,17 @@ function Page() {
       },
       {
         name: 'iconImage',
-        label: 'Icon Image',
+        label: 'Icon Image (512x410, max 30kb)',
         required: true,
         type: IconImageUploader,
         showInList: true
       },
-      // todo: add uploader
       // {
       //   name: 'images',
-      //   label: 'Images',
-      //   type: TextField
+      //   label: 'Preview Image (1920x1080, max 300kb)',
+      //   required: true,
+      //   type: IconImageUploader,
+      //   showInList: true
       // },
       {
         name: 'network',
