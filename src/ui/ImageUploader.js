@@ -26,9 +26,9 @@ function ImageUploader(props) {
       console.log('files', files);
       for (const fileObj of files) {
         const file = fileObj.file;
-        Storage.put(`userimages/${file.name}`, file, {
+        Storage.put(`${file.name}`, file, {
           contentType: file.type,
-          level: "public",
+          level: "public"
         }).then(result => {
           console.log("Success uploading file!");
         }).catch(err => {
