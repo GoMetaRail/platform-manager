@@ -127,10 +127,25 @@
     }
   },
   "storage": {
-    "s3platformmanager": {
+    "GoMetaRail": {
       "service": "S3",
       "providerPlugin": "awscloudformation",
-      "dependsOn": []
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "UserAuth",
+          "attributes": [
+            "UserPoolId"
+          ]
+        },
+        {
+          "category": "auth",
+          "resourceName": "userPoolGroups",
+          "attributes": [
+            "AdminGroupRole"
+          ]
+        }
+      ]
     }
   },
   "hosting": {

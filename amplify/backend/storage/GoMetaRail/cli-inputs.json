@@ -1,0 +1,21 @@
+{
+  "resourceName": "GoMetaRail",
+  "policyUUID": "4ab1dc6f",
+  "bucketName": "gometarail",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "READ"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "groupAccess": {
+    "Admin": [
+      "CREATE_AND_UPDATE",
+      "READ",
+      "DELETE"
+    ]
+  }
+}

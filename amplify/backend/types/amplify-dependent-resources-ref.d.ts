@@ -34,7 +34,7 @@ export type AmplifyDependentResourcesAttributes = {
         }
     },
     "storage": {
-        "s3platformmanager": {
+        "GoMetaRail": {
             "BucketName": "string",
             "Region": "string"
         }

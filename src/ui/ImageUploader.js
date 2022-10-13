@@ -3,10 +3,13 @@ import {
   Alert,
   Button, Card, Collection, Flex, Grid, Heading, Image, Link, Loader, ScrollView, TextAreaField, TextField
 } from '@aws-amplify/ui-react';
-import Storage from "@aws-amplify/storage";
-import {API, graphqlOperation} from 'aws-amplify';
+import {API, Auth, Storage, graphqlOperation} from 'aws-amplify';
 import * as query from "../graphql/queries";
 import * as mutation from "../graphql/mutations";
+
+import awsExports from "../aws-exports";
+Auth.configure(awsExports);
+Storage.configure(awsExports);
 
 // todo: enforce max uploads and file size
 
@@ -18,19 +21,40 @@ function ImageUploader(props) {
   let inputRef;
 
   function upload() {
-    setUploading(true);
-    console.log('files', files);
-    // Storage.put(`userimages/${this.upload.files[0].name}`,
-    //   this.upload.files[0],
-    //   { contentType: this.upload.files[0].type })
-    //   .then(result => {
-    //     this.upload = null;
-    //     this.setState({ response: "Success uploading file!" });
-    //   })
-    //   .catch(err => {
-    //     this.setState({ response: `Cannot uploading file: ${err}` });
-    //   });
-    setUploading(false);
+    try {
+      setUploading(true);
+      console.log('files', files);
+      for (const fileObj of files) {
+        const file = fileObj.file;
+        Storage.put(`userimages/${file.name}`, file, {
+          contentType: file.type,
+          level: "public",
+        }).then(result => {
+          console.log("Success uploading file!");
+        }).catch(err => {
+          console.error(`Cannot upload file: ${err}`);
+        }).finally(() => {
+          setUploading(false);
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      setUploading(false);
+    }
+  }
+
+  function addFiles() {
+    setFiles(files.concat(
+      Array.from(inputRef.files).map(i => {
+        return {name: i.name, file: i}
+      })
+    ));
+  }
+
+  function removeFile(index) {
+    setFiles(files.filter((file, i) => {
+      return i !== index;
+    }));
   }
 
   return (
@@ -48,7 +72,7 @@ function ImageUploader(props) {
                 type="list"
                 direction="row"
                 gap="20px"
-                wrap="nowrap"
+                wrap="wrap"
               >
                 {
                   (item, index) => (
@@ -58,7 +82,16 @@ function ImageUploader(props) {
                       maxWidth="20rem"
                       variation="outlined"
                     >
-                      <p>{item.name}</p>
+                      <p>
+                        {item.name}
+                        <Link
+                          onClick={(e) => {
+                            removeFile(index)
+                          }}
+                        >
+                          &nbsp;x
+                        </Link>
+                      </p>
                       <Image
                         alt={`${itemNameSingular}Image${index + 1}`}
                         src={URL.createObjectURL(item.file)}
@@ -76,11 +109,7 @@ function ImageUploader(props) {
           style={{display: "none"}}
           ref={refParam => inputRef = refParam}
           onChange={e => {
-            setFiles(files.concat(
-              Array.from(inputRef.files).map(i => {
-                return {name: i.name, file: i}
-              })
-            ));
+            addFiles();
           }}
         />
         <Button
