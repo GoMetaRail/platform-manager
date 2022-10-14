@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useImperativeHandle} from 'react';
 import {
   Alert,
   Button, Card, Collection, Flex, Grid, Heading, Image, Link, Loader, ScrollView, TextAreaField, TextField
@@ -8,47 +8,86 @@ import * as query from "../graphql/queries";
 import * as mutation from "../graphql/mutations";
 
 import awsExports from "../aws-exports";
+import prettyBytes from "pretty-bytes";
+
 Auth.configure(awsExports);
 Storage.configure(awsExports);
 
-// todo: enforce max uploads and file size
-
-function ImageUploader(props) {
-  const {onChange, isDisabled, name, value, maxLength, fileSize, fileTypes, itemNameSingular, itemNamePlural} = props;
+function ImageUploader(props, ref) {
+  const {
+    onChange,
+    isDisabled,
+    label,
+    name,
+    value,
+    maxFileSize,
+    maxLength,
+    fileTypes
+  } = props;
   const [files, setFiles] = useState([]);
   const [response, setResponse] = useState('');
   const [uploading, setUploading] = useState(false);
   let inputRef;
 
-  function upload() {
-    try {
-      setUploading(true);
-      console.log('files', files);
-      for (const fileObj of files) {
-        const file = fileObj.file;
-        Storage.put(`${file.name}`, file, {
-          contentType: file.type,
-          level: "public"
-        }).then(result => {
-          console.log("Success uploading file!");
-        }).catch(err => {
-          console.error(`Cannot upload file: ${err}`);
-        }).finally(() => {
-          setUploading(false);
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      setUploading(false);
+  useImperativeHandle(ref, () => ({
+    isUploader: true,
+    isList() {
+      return maxLength !== 1;
+    },
+    getFiles() {
+      return files;
+    },
+    upload(namePrepend) {
+      return new Promise((resolve, reject) => {
+        setUploading(true);
+
+        const uploadedFiles = [];
+        for (const [index, fileObj] of files.entries()) {
+          if (maxLength && index >= maxLength) {
+            // Don't upload any more files
+            continue;
+          }
+
+          const file = fileObj.file;
+
+          if (maxFileSize && file.size > maxFileSize) {
+            throw new Error(`File is greater than max filesize of ${prettyBytes(maxFileSize)}`);
+          }
+
+          const suffix = maxLength && maxLength > 1 ? `-${index + 1}` : '';
+          let fileName = `${namePrepend}${name}${suffix}.jpg`;
+          Storage.put(fileName, file, {
+            contentType: file.type,
+            level: "public"
+          }).then(result => {
+            uploadedFiles.push(result.key);
+          }).catch(err => {
+            reject(`Cannot upload file: ${err}`);
+          }).finally(() => {
+            if(index === (files.length - 1)) {
+              // All uploads completed
+              setUploading(false);
+              resolve(uploadedFiles);
+            }
+          });
+        }
+      });
     }
-  }
+  }));
 
   function addFiles() {
-    setFiles(files.concat(
+    const newFiles = files.concat(
       Array.from(inputRef.files).map(i => {
+        if (maxFileSize && i.size > maxFileSize) {
+          throw new Error(`File is greater than max filesize of ${prettyBytes(maxFileSize)}`);
+        }
         return {name: i.name, file: i}
       })
-    ));
+    );
+
+    setFiles(newFiles.filter((file, index) => {
+      return maxLength && index < maxLength;
+    }));
   }
 
   function removeFile(index) {
@@ -61,7 +100,7 @@ function ImageUploader(props) {
     <div>
       <label
         className="amplify-label">
-        {(maxLength === 1 ? itemNameSingular : itemNamePlural) + (maxLength > 1 ? ` (maximum: ${maxLength})` : '')}
+        {label + (maxLength > 1 ? ` (maximum: ${maxLength})` : '')}
       </label>
       <div>
         {
@@ -93,7 +132,7 @@ function ImageUploader(props) {
                         </Link>
                       </p>
                       <Image
-                        alt={`${itemNameSingular}Image${index + 1}`}
+                        alt={`Upload${index + 1}`}
                         src={URL.createObjectURL(item.file)}
                       />
                     </Card>
@@ -115,14 +154,9 @@ function ImageUploader(props) {
         <Button
           onClick={() => inputRef.click()}
           isLoading={uploading}
+          isDisabled={isDisabled}
         >
-          Browse
-        </Button>
-        <Button
-          onClick={upload}
-          isLoading={uploading}
-        >
-          Upload Test
+          Choose Upload
         </Button>
         {!!response && <div>{response}</div>}
       </div>

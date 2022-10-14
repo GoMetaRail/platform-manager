@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef, createRef} from 'react';
 import {
   Alert,
-  Button, Card, Collection, Flex, Grid, Heading, Link, Loader, ScrollView, TextAreaField, TextField
+  Button, Card, Collection, Flex, Grid, Heading, Image, Link, Loader, ScrollView, TextAreaField, TextField
 } from '@aws-amplify/ui-react';
 import {API, graphqlOperation} from 'aws-amplify';
 import * as query from "./graphql/queries";
@@ -18,6 +18,9 @@ function Update(props) {
   const [isSaving, setIsSaving] = useState(false);
   const [origItem, setOrigItem] = useState({});
   const [item, setItem] = useState({});
+
+  const fieldRefs = useRef([]);
+  fieldRefs.current = itemFields.map((_, i) => fieldRefs.current[i] ?? createRef());
 
   useEffect(() => {
     fetchitem();
@@ -61,7 +64,12 @@ function Update(props) {
     clearAlerts('error');
     try {
       // Check for required fields
-      const missingRequiredFields = itemFields.filter(field => {
+      const missingRequiredFields = itemFields.filter((field, index) => {
+        const ref = fieldRefs.current[index].current;
+        if (field.required && ref.isUploader) {
+          return ref.getFiles().length === 0;
+        }
+
         return field.required && (
           item[field.name] === ''
           || typeof item[field.name] === 'undefined'
@@ -75,68 +83,90 @@ function Update(props) {
       }
 
       const sanitizedItem = {};
-      itemFields.forEach(field => {
-        if (field.manyToMany) {
+      itemFields.forEach((field, index) => {
+        const ref = fieldRefs.current[index].current;
+
+        if (field.manyToMany || ref.isUploader) {
           return;
         }
 
         if (field.belongsTo && item[field.name].id) {
           sanitizedItem[field.belongsTo] = item[field.name].id;
-        } else {
-          sanitizedItem[field.name] = item[field.name];
+          return;
         }
+
+        sanitizedItem[field.name] = item[field.name];
       });
 
-      let tmpItem = item;
-      if (item.id) {
-        tmpItem = item;
-        sanitizedItem['id'] = item.id;
-        await API.graphql(graphqlOperation(mutation[`update${itemNameSingular}`], {
-            input: sanitizedItem
-          }
-        ));
-      } else {
-        const apiData = await API.graphql(graphqlOperation(mutation[`create${itemNameSingular}`], {
-            input: sanitizedItem
-          }
-        ));
-        tmpItem = apiData.data[`create${itemNameSingular}`];
-      }
+      try {
+        let tmpItem;
+        if (item.id) {
+          tmpItem = item;
+          sanitizedItem['id'] = item.id;
+          await API.graphql(graphqlOperation(mutation[`update${itemNameSingular}`], {
+              input: sanitizedItem
+            }
+          ));
+        } else {
+          const apiData = await API.graphql(graphqlOperation(mutation[`create${itemNameSingular}`], {
+              input: sanitizedItem
+            }
+          ));
+          tmpItem = apiData.data[`create${itemNameSingular}`];
+        }
 
-      // Update join table entries
-      for (const field of itemFields) {
-        if (field.manyToMany) {
-          const origRelatedIds = origItem[field.name] ?? [];
-          for (const relatedItem of item[field.name]) {
-            const relationObj = {};
-            relationObj['id'] = `${tmpItem.id}|${relatedItem.id}`;
-            relationObj[field.manyToMany.id] = relatedItem.id;
-            relationObj[`${itemNameSingular.toLowerCase()}ID`] = tmpItem.id;
-            const createOrUpdate = origRelatedIds.includes(relatedItem.id) ? 'update' : 'create';
-            await API.graphql(graphqlOperation(mutation[`${createOrUpdate}${field.manyToMany.relationship}`], {
-              input: relationObj
-            }));
-          }
-
-          if (origRelatedIds.length !== 0) {
-            // Delete removed entries
-            const updatedIds = item[field.name].map(i => i.id);
-            const deletedIds = origRelatedIds.filter(i => !updatedIds.includes(i));
-            for (const deletedId of deletedIds) {
-              await API.graphql(graphqlOperation(mutation[`delete${field.manyToMany.relationship}`], {
-                input: {
-                  id: `${tmpItem.id}|${deletedId}`
-                }
+        // Update join table entries
+        for (const field of itemFields) {
+          if (field.manyToMany) {
+            const origRelatedIds = origItem[field.name] ?? [];
+            for (const relatedItem of item[field.name] ?? []) {
+              const relationObj = {};
+              relationObj['id'] = `${tmpItem.id}|${relatedItem.id}`;
+              relationObj[field.manyToMany.id] = relatedItem.id;
+              relationObj[`${itemNameSingular.toLowerCase()}ID`] = tmpItem.id;
+              const createOrUpdate = origRelatedIds.includes(relatedItem.id) ? 'update' : 'create';
+              await API.graphql(graphqlOperation(mutation[`${createOrUpdate}${field.manyToMany.relationship}`], {
+                input: relationObj
               }));
+            }
+
+            if (origRelatedIds.length !== 0) {
+              // Delete removed entries
+              const updatedIds = item[field.name].map(i => i.id);
+              const deletedIds = origRelatedIds.filter(i => !updatedIds.includes(i));
+              for (const deletedId of deletedIds) {
+                await API.graphql(graphqlOperation(mutation[`delete${field.manyToMany.relationship}`], {
+                  input: {
+                    id: `${tmpItem.id}|${deletedId}`
+                  }
+                }));
+              }
             }
           }
         }
-      }
-      setItem(tmpItem);
-      setOrigItem(tmpItem);
-      navigate(baseRoute);
 
-      pushAlert(`item ${item.id ? 'updated' : 'added'}`, 'success');
+        // Update uploads
+        for (const [index, field] of itemFields.entries()) {
+          const ref = fieldRefs.current[index].current;
+          if (ref.isUploader) {
+            const uploadedFiles = await ref.upload(`${tmpItem.id}/`);
+            sanitizedItem[field.name] = ref.isList() ? uploadedFiles : uploadedFiles[0];
+
+            // Update entry in the db
+            await API.graphql(graphqlOperation(mutation[`update${itemNameSingular}`], {
+                input: sanitizedItem
+              }
+            ));
+          }
+        }
+
+        setItem(tmpItem);
+        setOrigItem(tmpItem);
+        navigate(baseRoute);
+        pushAlert(`${itemNameSingular} ${item.id ? 'updated' : 'added'}`, 'success');
+      } catch (err) {
+        pushAlert(`Error saving ${itemNameSingular.toLowerCase()}. ${err}`, 'error');
+      }
     } catch (e) {
       console.error(e);
       e.errors.forEach(error => pushAlert(error.message, 'error'));
@@ -197,7 +227,11 @@ function Update(props) {
               itemFields.map((field, index) => {
                 return (
                   <Card key={index}>
-                    <field.type isRequired={field.required} isDisabled={isSaving} autoComplete="off" label={field.label}
+                    <field.type ref={fieldRefs.current[index]}
+                                isRequired={field.required}
+                                isDisabled={isSaving}
+                                autoComplete="off"
+                                label={field.label}
                                 value={item[field.name]}
                                 name={field.name}
                                 onChange={handleInputChange}/>
@@ -271,11 +305,27 @@ function List(props) {
                 {
                   itemFields.map((field, index) => {
                     if (field.showInList) {
-                      return (
-                        <p
-                          key={index}
-                        >{item[field.name]}</p>
-                      )
+                      if (field.isImage) {
+                        return (
+                          <div>
+                            <div>{field.name}</div>
+                            <Image
+                              key={index}
+                              alt={field.name}
+                              src={process.env.REACT_APP_IMG_URL + item[field.name]}
+                              style={{maxWidth: '150px', maxHeight: '150px'}}
+                            />
+                          </div>
+                        )
+                      } else {
+                        return (
+                          <p
+                            key={index}
+                          >
+                            {field.name}: {item[field.name]}
+                          </p>
+                        )
+                      }
                     }
                   })
                 }

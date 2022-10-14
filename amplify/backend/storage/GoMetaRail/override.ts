@@ -23,20 +23,4 @@ export function override (resources: AmplifyS3ResourceTemplate) {
       }
     }
   }, "PolicyForCloudFrontPrivateContent");
-
-  // resources.addCfnResource({
-  //   "type" : "AWS::S3::BucketPolicy",
-  //   "properties" : {
-  //     "Bucket" : {"Ref" : "bucketName"},
-  //     "PolicyDocument": {
-  //       "Statement":[{
-  //         "Sid": "PublidReadGetObject",
-  //         "Effect": "Allow",
-  //         "Action": "s3:GetObject",
-  //         "Principal": "*",
-  //         "Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "bucketName" } , "/public/*" ]]}
-  //       }]
-  //     }
-  //   }
-  // }, "S3BucketPolicy");
 }

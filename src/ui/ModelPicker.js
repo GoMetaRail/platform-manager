@@ -1,15 +1,17 @@
-import React, {useState, useEffect, createRef} from 'react';
+import React, {useState, useEffect, useImperativeHandle} from 'react';
 import 'react-select-search/style.css';
 import * as query from "../graphql/queries";
 import {API, graphqlOperation} from "aws-amplify";
 import {Collection, Card, Link} from "@aws-amplify/ui-react";
 
-function ModelPicker(props) {
+function ModelPicker(props, ref) {
   const {onChange, isDisabled, name, value, maxLength, itemNameSingular, itemNamePlural} = props;
   const [options, setOptions] = useState([]);
   const [selected, setSelected] = useState([]);
   const Typeahead = require('react-typeahead').Typeahead;
   let searchTimeout = null;
+
+  useImperativeHandle(ref, () => ({}));
 
   useEffect(() => {
     if (value) {
