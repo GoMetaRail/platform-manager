@@ -22,10 +22,12 @@ function ImageUploader(props, ref) {
     value,
     maxFileSize,
     maxLength,
-    fileTypes
+    fileTypes,
+    pushAlert,
+    clearAlerts
   } = props;
   const [files, setFiles] = useState([]);
-  const [response, setResponse] = useState('');
+  const [markedForDeletion, setMarkedForDeletion] = useState([]);
   const [uploading, setUploading] = useState(false);
   let inputRef;
 
@@ -41,47 +43,113 @@ function ImageUploader(props, ref) {
       return new Promise((resolve, reject) => {
         setUploading(true);
 
+        const checkProgress = (index) => {
+          if (index === (files.length - 1)) {
+            // All uploads completed
+            setUploading(false);
+            resolve(uploadedFiles);
+          }
+        }
+
+        const safeDelete = async (key) => {
+          // Only allow deletion of images (instead of folders, etc.)
+          if (key.endsWith('.jpg')) {
+            Storage.remove(key);
+          }
+        }
+
+        // Delete removed uploads
+        for (const fileObj of markedForDeletion) {
+          safeDelete(fileObj.key);
+        }
+
+        // Check if there is nothing to upload
         const uploadedFiles = [];
+        checkProgress(-1);
         for (const [index, fileObj] of files.entries()) {
           if (maxLength && index >= maxLength) {
             // Don't upload any more files
             continue;
           }
 
-          const file = fileObj.file;
-
-          if (maxFileSize && file.size > maxFileSize) {
-            throw new Error(`File is greater than max filesize of ${prettyBytes(maxFileSize)}`);
-          }
-
           const suffix = maxLength && maxLength > 1 ? `-${index + 1}` : '';
           let fileName = `${namePrepend}${name}${suffix}.jpg`;
-          Storage.put(fileName, file, {
-            contentType: file.type,
-            level: "public"
-          }).then(result => {
-            uploadedFiles.push(result.key);
-          }).catch(err => {
-            reject(`Cannot upload file: ${err}`);
-          }).finally(() => {
-            if(index === (files.length - 1)) {
-              // All uploads completed
-              setUploading(false);
-              resolve(uploadedFiles);
+
+          if (fileObj.isUploaded) {
+            if (fileObj.key !== fileName) {
+              // Rename the file by copying it first
+              Storage.copy({
+                key: fileObj.key
+              }, {
+                key: fileName
+              }).then(async () => {
+                // Then delete the original file
+                await safeDelete(fileObj.key);
+              }).finally(() => {
+                checkProgress(index);
+              });
+            } else {
+              // No changes needed
+              checkProgress(index);
             }
-          });
+          } else {
+            const file = fileObj.file;
+
+            if (maxFileSize && file.size > maxFileSize) {
+              throw new Error(`File is greater than max filesize of ${prettyBytes(maxFileSize)}`);
+            }
+
+            Storage.put(fileName, file, {
+              contentType: file.type,
+              level: "public"
+            }).then(result => {
+              uploadedFiles.push(result.key);
+            }).catch(err => {
+              reject(`Cannot upload file: ${err}`);
+            }).finally(() => checkProgress(index));
+          }
         }
       });
     }
   }));
 
+  useEffect(() => {
+    if (value) {
+      let tmpValue = value;
+      if (!Array.isArray(tmpValue)) {
+        tmpValue = [tmpValue];
+      }
+
+      const newFiles = tmpValue.map((key, index) => {
+        const suffix = maxLength && maxLength > 1 ? `-${index + 1}` : '';
+        return {
+          name: name + suffix,
+          url: process.env.REACT_APP_IMG_URL + key,
+          isUploaded: true,
+          key: key
+        };
+      });
+
+      setFiles(newFiles);
+    }
+  }, []);
+
   function addFiles() {
     const newFiles = files.concat(
-      Array.from(inputRef.files).map(i => {
+      Array.from(inputRef.files).filter(i => {
         if (maxFileSize && i.size > maxFileSize) {
-          throw new Error(`File is greater than max filesize of ${prettyBytes(maxFileSize)}`);
+          pushAlert(`File is greater than max filesize of ${prettyBytes(maxFileSize)}`, 'error');
+          return false;
         }
-        return {name: i.name, file: i}
+
+        return true;
+      }).map(i => {
+        return {
+          name: i.name,
+          url: URL.createObjectURL(i),
+          isUploaded: false,
+          file: i
+        }
       })
     );
 
@@ -91,9 +159,19 @@ function ImageUploader(props, ref) {
   }
 
   function removeFile(index) {
-    setFiles(files.filter((file, i) => {
-      return i !== index;
-    }));
+    setFiles((tmpFiles) => {
+      const file = files[index];
+      if (file.isUploaded) {
+        setMarkedForDeletion((tmpDeletions) => {
+          tmpDeletions.push(file);
+          return tmpDeletions;
+        });
+      }
+
+      return tmpFiles.filter((tmpFile, i) => {
+        return i !== index;
+      });
+    });
   }
 
   return (
@@ -121,7 +199,7 @@ function ImageUploader(props, ref) {
                       maxWidth="20rem"
                       variation="outlined"
                     >
-                      <p>
+                      <div style={{marginBottom: '5px'}}>
                         {item.name}
                         <Link
                           onClick={(e) => {
@@ -130,10 +208,10 @@ function ImageUploader(props, ref) {
                         >
                           &nbsp;x
                         </Link>
-                      </p>
+                      </div>
                       <Image
                         alt={`Upload${index + 1}`}
-                        src={URL.createObjectURL(item.file)}
+                        src={item.url}
                       />
                     </Card>
                   )
@@ -154,11 +232,10 @@ function ImageUploader(props, ref) {
         <Button
           onClick={() => inputRef.click()}
           isLoading={uploading}
-          isDisabled={isDisabled}
+          isDisabled={isDisabled || (maxLength && files.length >= maxLength)}
         >
           Choose Upload
         </Button>
-        {!!response && <div>{response}</div>}
       </div>
     </div>
   );

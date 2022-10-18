@@ -59,7 +59,7 @@ function Page() {
       },
       {
         name: 'iconImage',
-        label: 'Icon Image (512x410, max 30kb)',
+        label: 'Icon Image (512x410, max 40kb)',
         required: true,
         type: IconImageUploader,
         isImage: true,

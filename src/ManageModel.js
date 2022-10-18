@@ -150,7 +150,7 @@ function Update(props) {
           const ref = fieldRefs.current[index].current;
           if (ref.isUploader) {
             const uploadedFiles = await ref.upload(`${tmpItem.id}/`);
-            sanitizedItem[field.name] = ref.isList() ? uploadedFiles : uploadedFiles[0];
+            sanitizedItem[field.name] = (ref.isList() ? uploadedFiles : uploadedFiles[0]) ?? '';
 
             // Update entry in the db
             await API.graphql(graphqlOperation(mutation[`update${itemNameSingular}`], {
@@ -234,7 +234,10 @@ function Update(props) {
                                 label={field.label}
                                 value={item[field.name]}
                                 name={field.name}
-                                onChange={handleInputChange}/>
+                                onChange={handleInputChange}
+                                pushAlert={pushAlert}
+                                clearAlerts={clearAlerts}
+                                />
                   </Card>
                 );
               })
@@ -305,7 +308,7 @@ function List(props) {
                 {
                   itemFields.map((field, index) => {
                     if (field.showInList) {
-                      if (field.isImage) {
+                      if (field.isImage && item[field.name]) {
                         return (
                           <div>
                             <div>{field.name}</div>
