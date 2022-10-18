@@ -2,15 +2,11 @@ import React from 'react';
 import 'react-select-search/style.css';
 import ImageUploader from "./ImageUploader";
 
-function IconImageUploader(props) {
+export default React.forwardRef((props, ref) => {
   return ImageUploader({
     ...props,
     maxLength: 1,
-    fileSize: 2000000, // 2mb
-    fileTypes: ['image/png', 'image/jpeg'],
-    itemNameSingular: 'Icon',
-    itemNamePlural: 'Icons'
-  });
-}
-
-export default IconImageUploader;
+    maxFileSize: 40000, // 30kb
+    fileTypes: ['image/jpeg']
+  }, ref);
+});

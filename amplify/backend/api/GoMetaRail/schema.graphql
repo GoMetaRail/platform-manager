@@ -11,7 +11,7 @@ type Platform @model @searchable @auth(rules: [
     description: String
     tags: [Tag] @manyToMany(relationName: "PlatformTags")
     domain: String!
-    iconImage: String!
+    iconImage: String
     network: Network! @belongsTo
     url: String!
 }

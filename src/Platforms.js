@@ -37,7 +37,7 @@ function Page() {
         name: 'tags',
         label: 'Tags',
         type: TagPicker,
-        showInList: true,
+        showInList: false,
         manyToMany: {
           relationship: 'PlatformTags',
           id: 'tagID'
@@ -48,7 +48,7 @@ function Page() {
         label: 'Domain',
         required: true,
         type: TextField,
-        showInList: true
+        showInList: false
       },
       {
         name: 'url',
@@ -59,9 +59,10 @@ function Page() {
       },
       {
         name: 'iconImage',
-        label: 'Icon Image (512x410, max 30kb)',
+        label: 'Icon Image (512x410, max 40kb)',
         required: true,
         type: IconImageUploader,
+        isImage: true,
         showInList: true
       },
       // {
@@ -76,7 +77,7 @@ function Page() {
         label: 'Network',
         required: true,
         type: NetworkPicker,
-        showInList: true,
+        showInList: false,
         belongsTo: 'networkPlatformsId'
       }
     ]

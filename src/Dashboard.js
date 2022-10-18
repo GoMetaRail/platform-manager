@@ -18,11 +18,13 @@ import {
 import {withAuthenticator} from '@aws-amplify/ui-react';
 
 import awsExports from "./aws-exports";
+import Storage from "@aws-amplify/storage";
 
 import Platforms from "./Platforms";
 import Categories from "./Categories";
 import Tags from "./Tags";
 import Networks from "./Networks";
+import config from "./aws-exports";
 
 Amplify.configure({
   ...awsExports
