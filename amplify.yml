@@ -12,7 +12,7 @@ frontend:
         - npm ci
     build:
       commands:
-        - echo "IMAGE_URL=${IMAGE_URL}" >> .env
+        - echo "REACT_APP_IMG_URL=${REACT_APP_IMG_URL}" >> .env
         - npm run build
   artifacts:
     baseDirectory: build
