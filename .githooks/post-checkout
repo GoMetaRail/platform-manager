@@ -7,12 +7,13 @@ printf '\npost-checkout hook\n\n'
 prevHEAD=$1
 newHEAD=$2
 checkoutType=$3
+newBranch=`git reflog | awk 'NR==1{ print $8; exit }'`
 
-if [ "$newHEAD" = "main" ]; then
+if [ "$newBranch" = "main" ]; then
   amplify checkout env prod
-elif [ "$newHEAD" = "stage" ]; then
+elif [ "$newBranch" = "stage" ]; then
   amplify checkout env stage
-elif [ "$newHEAD" = "test" ]; then
+elif [ "$newBranch" = "test" ]; then
   amplify checkout env test
 else
   amplify checkout env dev

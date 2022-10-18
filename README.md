@@ -2,6 +2,9 @@
 
 This app uses AWS Amplify to deploy the front and back end
 
-## Setup git hooks (mac only)
-ln -s ../.githooks/  .git/hooks
-chmod u+x .git/hooks/*
+## Setup git hooks
+git config core.hooksPath .githooks
+chmod u+x .githooks/*
+
+## Setup .env (customize as needed)
+cp .env.example .env
