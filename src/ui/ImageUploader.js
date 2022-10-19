@@ -88,8 +88,11 @@ function ImageUploader(props, ref) {
               }).finally(() => {
                 checkProgress(index);
               });
+
+              uploadedFiles.push(fileName);
             } else {
               // No changes needed
+              uploadedFiles.push(fileObj.key);
               checkProgress(index);
             }
           } else {
