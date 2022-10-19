@@ -20,6 +20,15 @@ function Page() {
         showInList: true
       },
       {
+        name: 'iconImage',
+        label: 'Icon Image',
+        description: '512x410, max 40kb',
+        required: true,
+        type: IconImageUploader,
+        isImage: true,
+        showInList: true
+      },
+      {
         name: 'description',
         label: 'Description',
         type: TextAreaField,
@@ -52,17 +61,10 @@ function Page() {
       },
       {
         name: 'url',
-        label: 'URL (to open when platform is launched)',
+        label: 'URL',
+        description: 'to open when platform is launched',
         required: true,
         type: TextField,
-        showInList: true
-      },
-      {
-        name: 'iconImage',
-        label: 'Icon Image (512x410, max 40kb)',
-        required: true,
-        type: IconImageUploader,
-        isImage: true,
         showInList: true
       },
       // {
@@ -77,10 +79,42 @@ function Page() {
         label: 'Network',
         required: true,
         type: NetworkPicker,
-        showInList: false,
+        showInList: true,
         belongsTo: 'networkPlatformsId'
       }
-    ]
+    ],
+    /* GraphQL */ `
+          query ListPlatforms(
+              $filter: ModelPlatformFilterInput
+              $limit: Int
+              $nextToken: String
+          ) {
+              listPlatforms(filter: $filter, limit: $limit, nextToken: $nextToken) {
+                  items {
+                      id
+                      name
+                      description
+                      category {
+                          id
+                          name
+                      }
+                      network {
+                          id
+                          name
+                      }
+                      domain
+                      iconImage
+                      url
+                      createdAt
+                      updatedAt
+                      categoryPlatformsId
+                      networkPlatformsId
+                      owner
+                  }
+                  nextToken
+              }
+          }
+    `
   );
 }
 
