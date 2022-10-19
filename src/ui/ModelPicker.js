@@ -15,7 +15,6 @@ function ModelPicker(props, ref) {
 
   useEffect(() => {
     if (value) {
-      console.log('value', value);
       let tmpValue = value;
       if (!Array.isArray(tmpValue)) {
         tmpValue = [value];
