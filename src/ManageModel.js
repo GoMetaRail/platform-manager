@@ -231,7 +231,7 @@ function Update(props) {
                                 isRequired={field.required}
                                 isDisabled={isSaving}
                                 autoComplete="off"
-                                label={field.label}
+                                label={field.label + (field.description ? ` (${field.description})` : '')}
                                 value={item[field.name]}
                                 name={field.name}
                                 onChange={handleInputChange}
@@ -275,17 +275,17 @@ function Update(props) {
 }
 
 function List(props) {
-  const {baseRoute, itemNameSingular, itemNamePlural, itemFields} = props;
+  const {baseRoute, itemNameSingular, itemNamePlural, itemFields, listQuery} = props;
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    fetchPlatforms();
+    fetchItems();
   }, []);
 
-  async function fetchPlatforms() {
-    const apiData = await API.graphql({query: query[`list${itemNamePlural}`]});
+  async function fetchItems() {
+    const apiData = await API.graphql({query: listQuery ?? query[`list${itemNamePlural}`]});
     setItems(apiData.data[`list${itemNamePlural}`].items);
     setIsLoading(false);
   }
@@ -311,7 +311,7 @@ function List(props) {
                       if (field.isImage && item[field.name]) {
                         return (
                           <div>
-                            <div>{field.name}</div>
+                            <div>{field.label}:</div>
                             <Image
                               key={index}
                               alt={field.name}
@@ -321,11 +321,15 @@ function List(props) {
                           </div>
                         )
                       } else {
+                        let val = item[field.name];
+                        if(val && typeof val === 'object') {
+                          val = val.name;
+                        }
                         return (
                           <p
                             key={index}
                           >
-                            {field.name}: {item[field.name]}
+                            {field.label}: {val}
                           </p>
                         )
                       }
@@ -342,7 +346,7 @@ function List(props) {
   );
 }
 
-function ManageModel(baseRoute, itemNameSingular, itemNamePlural, itemFields) {
+function ManageModel(baseRoute, itemNameSingular, itemNamePlural, itemFields, listQuery) {
   const navigate = useNavigate();
   const params = useParams();
   const itemId = params['*'];
@@ -438,6 +442,7 @@ function ManageModel(baseRoute, itemNameSingular, itemNamePlural, itemFields) {
           itemNameSingular={itemNameSingular}
           itemNamePlural={itemNamePlural}
           itemFields={itemFields}
+          listQuery={listQuery}
         />)}
       {state === 'create' && (
         <Update
