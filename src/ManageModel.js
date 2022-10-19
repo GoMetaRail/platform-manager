@@ -33,8 +33,10 @@ function Update(props) {
 
       for (const field of itemFields) {
         if (field.manyToMany) {
-          const relQuery = {};
-          relQuery[`${itemNameSingular.toLowerCase()}ID`] = props.id;
+          const relQuery = {filter: {}};
+          relQuery.filter[`${itemNameSingular.toLowerCase()}ID`] = {
+            eq: props.id
+          };
           const relApiData = await API.graphql(graphqlOperation(query[`list${field.manyToMany.relationship}`], relQuery));
           const relItems = relApiData.data[`list${field.manyToMany.relationship}`].items;
 
@@ -237,7 +239,7 @@ function Update(props) {
                                 onChange={handleInputChange}
                                 pushAlert={pushAlert}
                                 clearAlerts={clearAlerts}
-                                />
+                    />
                   </Card>
                 );
               })
@@ -322,7 +324,7 @@ function List(props) {
                         )
                       } else {
                         let val = item[field.name];
-                        if(val && typeof val === 'object') {
+                        if (val && typeof val === 'object') {
                           val = val.name;
                         }
                         return (
