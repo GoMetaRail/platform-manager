@@ -310,7 +310,7 @@ function List(props) {
                 {
                   itemFields.map((field, index) => {
                     if (field.showInList) {
-                      if (field.isImage && item[field.name]) {
+                      if (field.isImage && item[field.name] && !field.showCountInList) {
                         return (
                           <div>
                             <div>{field.label}:</div>
@@ -324,12 +324,14 @@ function List(props) {
                         )
                       } else {
                         let val = item[field.name];
-                        if (val && typeof val === 'object') {
+                        if (val && typeof val === 'object' && val.hasOwnProperty('name')) {
                           val = val.name;
+                        } else if (field.showCountInList) {
+                          val = Array.isArray(val) ? val.length : '0';
                         }
                         return (
                           <p
-                            key={index}
+                            key={field.name}
                           >
                             {field.label}: {val}
                           </p>
