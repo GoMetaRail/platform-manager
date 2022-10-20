@@ -5,6 +5,7 @@ import CategoryPicker from "./ui/CategoryPicker";
 import TagPicker from "./ui/TagPicker";
 import NetworkPicker from "./ui/NetworkPicker";
 import IconImageUploader from "./ui/IconImageUploader";
+import PreviewImageUploader from "./ui/PreviewImageUploader";
 
 function Page() {
   return ManageModel(
@@ -67,13 +68,13 @@ function Page() {
         type: TextField,
         showInList: true
       },
-      // {
-      //   name: 'images',
-      //   label: 'Preview Image (1920x1080, max 300kb)',
-      //   required: true,
-      //   type: IconImageUploader,
-      //   showInList: true
-      // },
+      {
+        name: 'images',
+        label: 'Preview Images',
+        description: '1920x1080, max 300kb',
+        required: false,
+        type: PreviewImageUploader,
+      },
       {
         name: 'network',
         label: 'Network',
@@ -104,6 +105,7 @@ function Page() {
                       }
                       domain
                       iconImage
+                      images
                       url
                       createdAt
                       updatedAt

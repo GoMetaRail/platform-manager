@@ -1,14 +1,12 @@
-import React, {useState, useEffect, useImperativeHandle} from 'react';
+import React, {useState, useEffect, useImperativeHandle, createRef, useRef} from 'react';
 import {
-  Alert,
-  Button, Card, Collection, Flex, Grid, Heading, Image, Link, Loader, ScrollView, TextAreaField, TextField
+  Button, Card, Image, Link
 } from '@aws-amplify/ui-react';
-import {API, Auth, Storage, graphqlOperation} from 'aws-amplify';
-import * as query from "../graphql/queries";
-import * as mutation from "../graphql/mutations";
+import {Auth, Storage} from 'aws-amplify';
 
 import awsExports from "../aws-exports";
 import prettyBytes from "pretty-bytes";
+import Sortable from 'sortablejs';
 
 Auth.configure(awsExports);
 Storage.configure(awsExports);
@@ -30,6 +28,8 @@ function ImageUploader(props, ref) {
   const [markedForDeletion, setMarkedForDeletion] = useState([]);
   const [uploading, setUploading] = useState(false);
   let inputRef;
+  const imageCollectionRef = useRef();
+  const imageRefs = useRef([]);
 
   useImperativeHandle(ref, () => ({
     isUploader: true,
@@ -42,9 +42,10 @@ function ImageUploader(props, ref) {
     upload(namePrepend) {
       return new Promise((resolve, reject) => {
         setUploading(true);
+        const uploadedFiles = [];
 
-        const checkProgress = (index) => {
-          if (index === (files.length - 1)) {
+        const checkProgress = () => {
+          if (uploadedFiles.length === files.length) {
             // All uploads completed
             setUploading(false);
             resolve(uploadedFiles);
@@ -64,8 +65,7 @@ function ImageUploader(props, ref) {
         }
 
         // Check if there is nothing to upload
-        const uploadedFiles = [];
-        checkProgress(-1);
+        checkProgress();
         for (const [index, fileObj] of files.entries()) {
           if (maxLength && index >= maxLength) {
             // Don't upload any more files
@@ -73,28 +73,22 @@ function ImageUploader(props, ref) {
           }
 
           const suffix = maxLength && maxLength > 1 ? `-${index + 1}` : '';
-          let fileName = `${namePrepend}${name}${suffix}.jpg`;
+          let fileName = `${namePrepend}${name}${suffix}-${Date.now()}.jpg`;
 
           if (fileObj.isUploaded) {
-            if (fileObj.key !== fileName) {
-              // Rename the file by copying it first
-              Storage.copy({
-                key: fileObj.key
-              }, {
-                key: fileName
-              }).then(async () => {
-                // Then delete the original file
-                await safeDelete(fileObj.key);
-              }).finally(() => {
-                checkProgress(index);
-              });
+            // Rename the file by copying it first and append a version to the filename
+            Storage.copy({
+              key: fileObj.key
+            }, {
+              key: fileName
+            }).then(async () => {
+              // Then delete the original file
+              await safeDelete(fileObj.key);
+            }).finally(() => {
+              checkProgress();
+            });
 
-              uploadedFiles.push(fileName);
-            } else {
-              // No changes needed
-              uploadedFiles.push(fileObj.key);
-              checkProgress(index);
-            }
+            uploadedFiles.push(fileName);
           } else {
             const file = fileObj.file;
 
@@ -108,8 +102,9 @@ function ImageUploader(props, ref) {
             }).then(result => {
               uploadedFiles.push(result.key);
             }).catch(err => {
+              console.error('upload failed', err);
               reject(`Cannot upload file: ${err}`);
-            }).finally(() => checkProgress(index));
+            }).finally(() => checkProgress());
           }
         }
       });
@@ -134,7 +129,26 @@ function ImageUploader(props, ref) {
       });
 
       setFiles(newFiles);
+      imageRefs.current = files.map((_, i) => imageRefs.current[i] ?? createRef());
     }
+
+    setTimeout(() => {
+      if (maxLength === 1 || !imageCollectionRef.current) return;
+      Sortable.create(imageCollectionRef.current, {
+        onEnd: (e) => {
+          if (e.oldIndex !== e.newIndex) {
+            setFiles((currentFiles) => {
+              // Remove from old position
+              const file = currentFiles.splice(e.oldIndex, 1)[0];
+              // Insert into new position
+              currentFiles.splice(e.newIndex, 0, file);
+
+              return currentFiles;
+            });
+          }
+        }
+      });
+    }, 2000);
   }, []);
 
   function addFiles() {
@@ -161,9 +175,8 @@ function ImageUploader(props, ref) {
     }));
   }
 
-  function removeFile(index) {
+  function removeFile(file) {
     setFiles((tmpFiles) => {
-      const file = files[index];
       if (file.isUploaded) {
         setMarkedForDeletion((tmpDeletions) => {
           tmpDeletions.push(file);
@@ -172,7 +185,7 @@ function ImageUploader(props, ref) {
       }
 
       return tmpFiles.filter((tmpFile, i) => {
-        return i !== index;
+        return tmpFile.url !== file.url;
       });
     });
   }
@@ -185,19 +198,17 @@ function ImageUploader(props, ref) {
       </label>
       <div>
         {
-          files.length > 0 && (
-            <Card>
-              <Collection
-                items={files}
-                type="list"
-                direction="row"
-                gap="20px"
-                wrap="wrap"
-              >
-                {
-                  (item, index) => (
+          <Card>
+            <ul
+              className={'imageUploaderCollection'}
+              ref={imageCollectionRef}
+            >
+              {
+                files.map((item, index) => (
+                  <li
+                    key={item.url}
+                  >
                     <Card
-                      key={index}
                       borderRadius="medium"
                       maxWidth="20rem"
                       variation="outlined"
@@ -206,7 +217,7 @@ function ImageUploader(props, ref) {
                         {item.name}
                         <Link
                           onClick={(e) => {
-                            removeFile(index)
+                            removeFile(item)
                           }}
                         >
                           &nbsp;x
@@ -217,14 +228,15 @@ function ImageUploader(props, ref) {
                         src={item.url}
                       />
                     </Card>
-                  )
-                }
-              </Collection>
-            </Card>
-          )
+                  </li>
+                ))
+              }
+            </ul>
+          </Card>
         }
         <input
           type="file"
+          multiple
           accept={fileTypes.join(', ')}
           style={{display: "none"}}
           ref={refParam => inputRef = refParam}
@@ -237,7 +249,7 @@ function ImageUploader(props, ref) {
           isLoading={uploading}
           isDisabled={isDisabled || (maxLength && files.length >= maxLength)}
         >
-          Choose Upload
+          { maxLength === 1 && 'Choose Upload' || 'Choose Uploads' }
         </Button>
       </div>
     </div>
