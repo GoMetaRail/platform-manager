@@ -54,3 +54,15 @@
 .typeahead-list-item:last-child {
     border-bottom-width: 1px !important;
 }
+
+.imageUploaderCollection {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.imageUploaderCollection li {
+    display: inline-block;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}

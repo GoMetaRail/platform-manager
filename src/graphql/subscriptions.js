@@ -18,6 +18,7 @@ export const onCreatePlatform = /* GraphQL */ `
       }
       domain
       iconImage
+      images
       network {
         id
         name
@@ -52,6 +53,7 @@ export const onUpdatePlatform = /* GraphQL */ `
       }
       domain
       iconImage
+      images
       network {
         id
         name
@@ -86,6 +88,7 @@ export const onDeletePlatform = /* GraphQL */ `
       }
       domain
       iconImage
+      images
       network {
         id
         name
@@ -238,6 +241,7 @@ export const onCreatePlatformTags = /* GraphQL */ `
         description
         domain
         iconImage
+        images
         url
         createdAt
         updatedAt
@@ -269,6 +273,7 @@ export const onUpdatePlatformTags = /* GraphQL */ `
         description
         domain
         iconImage
+        images
         url
         createdAt
         updatedAt
@@ -300,6 +305,7 @@ export const onDeletePlatformTags = /* GraphQL */ `
         description
         domain
         iconImage
+        images
         url
         createdAt
         updatedAt
