@@ -73,6 +73,8 @@ function Page() {
         label: 'Preview Images',
         description: '1920x1080, max 300kb',
         required: false,
+        showInList: true,
+        showCountInList: true,
         type: PreviewImageUploader,
       },
       {
