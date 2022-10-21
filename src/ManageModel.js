@@ -1,7 +1,20 @@
 import React, {useState, useEffect, useRef, createRef} from 'react';
 import {
   Alert,
-  Button, Card, Collection, Flex, Grid, Heading, Image, Link, Loader, ScrollView, TextAreaField, TextField
+  Button,
+  Card,
+  Collection,
+  Flex,
+  Grid,
+  Heading,
+  Image,
+  Link,
+  Loader,
+  Pagination,
+  ScrollView,
+  SearchField,
+  TextAreaField,
+  TextField
 } from '@aws-amplify/ui-react';
 import {API, graphqlOperation} from 'aws-amplify';
 import * as query from "./graphql/queries";
@@ -277,80 +290,168 @@ function Update(props) {
 }
 
 function List(props) {
-  const {baseRoute, itemNameSingular, itemNamePlural, itemFields, listQuery} = props;
+  const {baseRoute, itemNameSingular, itemNamePlural, itemFields, listQuery, searchQuery} = props;
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [items, setItems] = useState([]);
+  const [lastSearch, setLastSearch] = useState(null);
+  const [pageTokens, setPageTokens] = useState([]);
+  const [currentPageIndex, setCurrentPageIndex] = useState(1);
+  const [hasMorePages, setHasMorePages] = useState(false);
+
+  let searchTimeout = null;
+  const itemsPerPage = 1; // 20
 
   useEffect(() => {
-    fetchItems();
+    changePage(1);
   }, []);
 
-  async function fetchItems() {
-    const apiData = await API.graphql({query: listQuery ?? query[`list${itemNamePlural}`]});
-    setItems(apiData.data[`list${itemNamePlural}`].items);
-    setIsLoading(false);
+  const changePage = async (pageIndex) => {
+    if (pageIndex > 0 && pageIndex <= (pageTokens.length + 1)) {
+      const nextToken = await searchItems(lastSearch, pageTokens[pageIndex - 2]);
+
+      if (pageIndex > pageTokens.length) {
+        setHasMorePages(!!nextToken);
+      }
+
+      setPageTokens((tmpPageTokens) => {
+        tmpPageTokens[pageIndex - 1] = nextToken;
+        setCurrentPageIndex(pageIndex);
+
+        return tmpPageTokens;
+      });
+    }
+  }
+
+  async function searchItems(q, nextToken) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        setIsLoading(true);
+
+        let result;
+        if (q) {
+          const apiData = await API.graphql(graphqlOperation(searchQuery ?? query[`search${itemNamePlural}`], {
+            filter: {
+              name: {wildcard: `*${q.toLowerCase()}*`}
+            },
+            limit: itemsPerPage,
+            nextToken
+          }));
+          result = apiData['data'][`search${itemNamePlural}`];
+        } else {
+          const apiData = await API.graphql(graphqlOperation(listQuery ?? query[`list${itemNamePlural}`], {
+            limit: itemsPerPage,
+            nextToken
+          }));
+          result = apiData['data'][`list${itemNamePlural}`];
+        }
+        setItems(result.items);
+        setLastSearch(q);
+
+        if(!nextToken) {
+          // This is a new search so reset the pagination
+          setCurrentPageIndex(1);
+          setPageTokens([result.nextToken]);
+          setHasMorePages(!!result.nextToken);
+        }
+
+        resolve(result.nextToken);
+      } catch (e) {
+        console.error(e);
+        reject(e);
+      } finally {
+        setIsLoading(false);
+      }
+    });
+  }
+
+  function searchItemsDebounce(q) {
+    clearTimeout(searchTimeout);
+
+    if (q === lastSearch) {
+      return;
+    }
+
+    searchTimeout = setTimeout(() => searchItems(q), 250);
   }
 
   return (
     <div>
+      <Card>
+        <SearchField
+          label=""
+          placeholder={`Search ${itemNamePlural}`}
+          onChange={e => searchItemsDebounce(e.target.value)}
+          onBlur={e => searchItemsDebounce(e.target.value)}
+        />
+      </Card>
       {isLoading && (
         <Loader size="large"/>
       ) || (
-        <Collection
-          items={items}
-          type="list"
-          direction="column"
-        >
-          {
-            (item, index) => (
-              <Card
-                key={item.id}
-              >
-                {
-                  itemFields.map((field, index) => {
-                    if (field.showInList) {
-                      if (field.isImage && item[field.name] && !field.showCountInList) {
-                        return (
-                          <div>
-                            <div>{field.label}:</div>
-                            <Image
-                              key={index}
-                              alt={field.name}
-                              src={process.env.REACT_APP_IMG_URL + item[field.name]}
-                              style={{maxWidth: '150px', maxHeight: '150px'}}
-                            />
-                          </div>
-                        )
-                      } else {
-                        let val = item[field.name];
-                        if (val && typeof val === 'object' && val.hasOwnProperty('name')) {
-                          val = val.name;
-                        } else if (field.showCountInList) {
-                          val = Array.isArray(val) ? val.length : '0';
+        <div>
+          <Collection
+            items={items}
+            type="list"
+            direction="column"
+          >
+            {
+              (item, index) => (
+                <Card
+                  key={item.id}
+                >
+                  {
+                    itemFields.map((field, index) => {
+                      if (field.showInList) {
+                        if (field.isImage && item[field.name] && !field.showCountInList) {
+                          return (
+                            <div>
+                              <div>{field.label}:</div>
+                              <Image
+                                key={index}
+                                alt={field.name}
+                                src={process.env.REACT_APP_IMG_URL + item[field.name]}
+                                style={{maxWidth: '150px', maxHeight: '150px'}}
+                              />
+                            </div>
+                          )
+                        } else {
+                          let val = item[field.name];
+                          if (val && typeof val === 'object' && val.hasOwnProperty('name')) {
+                            val = val.name;
+                          } else if (field.showCountInList) {
+                            val = Array.isArray(val) ? val.length : '0';
+                          }
+                          return (
+                            <p
+                              key={field.name}
+                            >
+                              {field.label}: {val}
+                            </p>
+                          )
                         }
-                        return (
-                          <p
-                            key={field.name}
-                          >
-                            {field.label}: {val}
-                          </p>
-                        )
                       }
-                    }
-                  })
-                }
-                <Button variation="primary" onClick={() => navigate(baseRoute + item.id)}>Edit</Button>
-              </Card>
-            )
-          }
-        </Collection>
+                    })
+                  }
+                  <Button variation="primary" onClick={() => navigate(baseRoute + item.id)}>Edit</Button>
+                </Card>
+              )
+            }
+          </Collection>
+          <Pagination
+            currentPage={currentPageIndex}
+            totalPages={pageTokens.length}
+            hasMorePages={hasMorePages}
+            onNext={() => changePage(currentPageIndex + 1)}
+            onPrevious={() => changePage(currentPageIndex - 1)}
+            onChange={(pageIndex) => changePage(pageIndex)}
+          />
+        </div>
       )}
     </div>
-  );
+  )
 }
 
-function ManageModel(baseRoute, itemNameSingular, itemNamePlural, itemFields, listQuery) {
+function ManageModel(baseRoute, itemNameSingular, itemNamePlural, itemFields, listQuery, searchQuery) {
   const navigate = useNavigate();
   const params = useParams();
   const itemId = params['*'];
@@ -447,6 +548,7 @@ function ManageModel(baseRoute, itemNameSingular, itemNamePlural, itemFields, li
           itemNamePlural={itemNamePlural}
           itemFields={itemFields}
           listQuery={listQuery}
+          searchQuery={searchQuery}
         />)}
       {state === 'create' && (
         <Update
