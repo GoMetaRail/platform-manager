@@ -240,6 +240,11 @@ function Update(props) {
           }}>
             {
               itemFields.map((field, index) => {
+                const fieldProps = {}
+                if (index === 0) {
+                  // Autofocus on first field
+                  fieldProps['autoFocus'] = true;
+                }
                 return (
                   <Card key={index}>
                     <field.type ref={fieldRefs.current[index]}
@@ -252,6 +257,7 @@ function Update(props) {
                                 onChange={handleInputChange}
                                 pushAlert={pushAlert}
                                 clearAlerts={clearAlerts}
+                                {...fieldProps}
                     />
                   </Card>
                 );
@@ -348,7 +354,7 @@ function List(props) {
         setItems(result.items);
         setLastSearch(q);
 
-        if(!nextToken) {
+        if (!nextToken) {
           // This is a new search so reset the pagination
           setCurrentPageIndex(1);
           setPageTokens([result.nextToken]);
