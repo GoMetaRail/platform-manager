@@ -11,26 +11,24 @@ import Amplify, {Auth} from 'aws-amplify';
 import {
   BrowserRouter as Router,
   NavLink,
-  Routes,
   Route,
+  Routes,
+  Navigate
 } from 'react-router-dom';
 
 import {withAuthenticator} from '@aws-amplify/ui-react';
 
 import awsExports from "./aws-exports";
-import Storage from "@aws-amplify/storage";
-
 import Platforms from "./Platforms";
 import Categories from "./Categories";
 import Tags from "./Tags";
 import Networks from "./Networks";
-import config from "./aws-exports";
 
 Amplify.configure({
   ...awsExports
 });
 
-function Dashboard({ isPassedToWithAuthenticator, signOut, user }) {
+function Dashboard({isPassedToWithAuthenticator, signOut, user}) {
   return (
     <Router>
       <Grid
@@ -72,7 +70,7 @@ function Dashboard({ isPassedToWithAuthenticator, signOut, user }) {
           columnEnd="2"
           id="sidebarMenu"
         >
-          <NavLink to="/platform/">Platforms</NavLink>
+          <NavLink exact to="/platform/">Platforms</NavLink>
           <NavLink to="/category/">Categories</NavLink>
           <NavLink to="/tag/">Tags</NavLink>
           <NavLink to="/network/">Networks</NavLink>
@@ -86,6 +84,10 @@ function Dashboard({ isPassedToWithAuthenticator, signOut, user }) {
             <Route path="/network/*" element={<Networks/>}/>
             <Route path="/category/*" element={<Categories/>}/>
             <Route path="/tag/*" element={<Tags/>}/>
+            <Route
+              path="*"
+              element={<Navigate to="/platform" replace/>}
+            />
           </Routes>
         </Card>
       </Grid>
