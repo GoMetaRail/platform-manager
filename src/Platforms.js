@@ -118,6 +118,64 @@ function Page() {
                   nextToken
               }
           }
+    `,
+    /* GraphQL */ `
+          query SearchPlatforms(
+              $filter: SearchablePlatformFilterInput
+              $sort: [SearchablePlatformSortInput]
+              $limit: Int
+              $nextToken: String
+              $from: Int
+              $aggregates: [SearchablePlatformAggregationInput]
+          ) {
+              searchPlatforms(
+                  filter: $filter
+                  sort: $sort
+                  limit: $limit
+                  nextToken: $nextToken
+                  from: $from
+                  aggregates: $aggregates
+              ) {
+                  items {
+                      id
+                      name
+                      description
+                      category {
+                          id
+                          name
+                      }
+                      network {
+                          id
+                          name
+                      }
+                      domain
+                      iconImage
+                      images
+                      url
+                      createdAt
+                      updatedAt
+                      categoryPlatformsId
+                      networkPlatformsId
+                      owner
+                  }
+                  nextToken
+                  total
+                  aggregateItems {
+                      name
+                      result {
+                          ... on SearchableAggregateScalarResult {
+                              value
+                          }
+                          ... on SearchableAggregateBucketResult {
+                              buckets {
+                                  key
+                                  doc_count
+                              }
+                          }
+                      }
+                  }
+              }
+          }
     `
   );
 }
