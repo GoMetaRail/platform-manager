@@ -300,7 +300,7 @@ function List(props) {
   const [hasMorePages, setHasMorePages] = useState(false);
 
   let searchTimeout = null;
-  const itemsPerPage = 1; // 20
+  const itemsPerPage = 20;
 
   useEffect(() => {
     changePage(1);
