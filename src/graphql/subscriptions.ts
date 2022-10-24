@@ -1,12 +1,10 @@
+/* tslint:disable */
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const createPlatform = /* GraphQL */ `
-  mutation CreatePlatform(
-    $input: CreatePlatformInput!
-    $condition: ModelPlatformConditionInput
-  ) {
-    createPlatform(input: $input, condition: $condition) {
+export const onCreatePlatform = /* GraphQL */ `
+  subscription OnCreatePlatform($owner: String) {
+    onCreatePlatform(owner: $owner) {
       id
       name
       category {
@@ -21,6 +19,7 @@ export const createPlatform = /* GraphQL */ `
       }
       domain
       iconImage
+      images
       network {
         id
         name
@@ -38,12 +37,9 @@ export const createPlatform = /* GraphQL */ `
     }
   }
 `;
-export const updatePlatform = /* GraphQL */ `
-  mutation UpdatePlatform(
-    $input: UpdatePlatformInput!
-    $condition: ModelPlatformConditionInput
-  ) {
-    updatePlatform(input: $input, condition: $condition) {
+export const onUpdatePlatform = /* GraphQL */ `
+  subscription OnUpdatePlatform($owner: String) {
+    onUpdatePlatform(owner: $owner) {
       id
       name
       category {
@@ -58,6 +54,7 @@ export const updatePlatform = /* GraphQL */ `
       }
       domain
       iconImage
+      images
       network {
         id
         name
@@ -75,12 +72,9 @@ export const updatePlatform = /* GraphQL */ `
     }
   }
 `;
-export const deletePlatform = /* GraphQL */ `
-  mutation DeletePlatform(
-    $input: DeletePlatformInput!
-    $condition: ModelPlatformConditionInput
-  ) {
-    deletePlatform(input: $input, condition: $condition) {
+export const onDeletePlatform = /* GraphQL */ `
+  subscription OnDeletePlatform($owner: String) {
+    onDeletePlatform(owner: $owner) {
       id
       name
       category {
@@ -95,6 +89,7 @@ export const deletePlatform = /* GraphQL */ `
       }
       domain
       iconImage
+      images
       network {
         id
         name
@@ -112,12 +107,9 @@ export const deletePlatform = /* GraphQL */ `
     }
   }
 `;
-export const createCategory = /* GraphQL */ `
-  mutation CreateCategory(
-    $input: CreateCategoryInput!
-    $condition: ModelCategoryConditionInput
-  ) {
-    createCategory(input: $input, condition: $condition) {
+export const onCreateCategory = /* GraphQL */ `
+  subscription OnCreateCategory {
+    onCreateCategory {
       id
       name
       platforms {
@@ -128,12 +120,9 @@ export const createCategory = /* GraphQL */ `
     }
   }
 `;
-export const updateCategory = /* GraphQL */ `
-  mutation UpdateCategory(
-    $input: UpdateCategoryInput!
-    $condition: ModelCategoryConditionInput
-  ) {
-    updateCategory(input: $input, condition: $condition) {
+export const onUpdateCategory = /* GraphQL */ `
+  subscription OnUpdateCategory {
+    onUpdateCategory {
       id
       name
       platforms {
@@ -144,12 +133,9 @@ export const updateCategory = /* GraphQL */ `
     }
   }
 `;
-export const deleteCategory = /* GraphQL */ `
-  mutation DeleteCategory(
-    $input: DeleteCategoryInput!
-    $condition: ModelCategoryConditionInput
-  ) {
-    deleteCategory(input: $input, condition: $condition) {
+export const onDeleteCategory = /* GraphQL */ `
+  subscription OnDeleteCategory {
+    onDeleteCategory {
       id
       name
       platforms {
@@ -160,12 +146,9 @@ export const deleteCategory = /* GraphQL */ `
     }
   }
 `;
-export const createTag = /* GraphQL */ `
-  mutation CreateTag(
-    $input: CreateTagInput!
-    $condition: ModelTagConditionInput
-  ) {
-    createTag(input: $input, condition: $condition) {
+export const onCreateTag = /* GraphQL */ `
+  subscription OnCreateTag {
+    onCreateTag {
       id
       name
       platforms {
@@ -176,12 +159,9 @@ export const createTag = /* GraphQL */ `
     }
   }
 `;
-export const updateTag = /* GraphQL */ `
-  mutation UpdateTag(
-    $input: UpdateTagInput!
-    $condition: ModelTagConditionInput
-  ) {
-    updateTag(input: $input, condition: $condition) {
+export const onUpdateTag = /* GraphQL */ `
+  subscription OnUpdateTag {
+    onUpdateTag {
       id
       name
       platforms {
@@ -192,12 +172,9 @@ export const updateTag = /* GraphQL */ `
     }
   }
 `;
-export const deleteTag = /* GraphQL */ `
-  mutation DeleteTag(
-    $input: DeleteTagInput!
-    $condition: ModelTagConditionInput
-  ) {
-    deleteTag(input: $input, condition: $condition) {
+export const onDeleteTag = /* GraphQL */ `
+  subscription OnDeleteTag {
+    onDeleteTag {
       id
       name
       platforms {
@@ -208,12 +185,9 @@ export const deleteTag = /* GraphQL */ `
     }
   }
 `;
-export const createNetwork = /* GraphQL */ `
-  mutation CreateNetwork(
-    $input: CreateNetworkInput!
-    $condition: ModelNetworkConditionInput
-  ) {
-    createNetwork(input: $input, condition: $condition) {
+export const onCreateNetwork = /* GraphQL */ `
+  subscription OnCreateNetwork {
+    onCreateNetwork {
       id
       name
       config
@@ -226,12 +200,9 @@ export const createNetwork = /* GraphQL */ `
     }
   }
 `;
-export const updateNetwork = /* GraphQL */ `
-  mutation UpdateNetwork(
-    $input: UpdateNetworkInput!
-    $condition: ModelNetworkConditionInput
-  ) {
-    updateNetwork(input: $input, condition: $condition) {
+export const onUpdateNetwork = /* GraphQL */ `
+  subscription OnUpdateNetwork {
+    onUpdateNetwork {
       id
       name
       config
@@ -244,12 +215,9 @@ export const updateNetwork = /* GraphQL */ `
     }
   }
 `;
-export const deleteNetwork = /* GraphQL */ `
-  mutation DeleteNetwork(
-    $input: DeleteNetworkInput!
-    $condition: ModelNetworkConditionInput
-  ) {
-    deleteNetwork(input: $input, condition: $condition) {
+export const onDeleteNetwork = /* GraphQL */ `
+  subscription OnDeleteNetwork {
+    onDeleteNetwork {
       id
       name
       config
@@ -262,12 +230,9 @@ export const deleteNetwork = /* GraphQL */ `
     }
   }
 `;
-export const createPlatformTags = /* GraphQL */ `
-  mutation CreatePlatformTags(
-    $input: CreatePlatformTagsInput!
-    $condition: ModelPlatformTagsConditionInput
-  ) {
-    createPlatformTags(input: $input, condition: $condition) {
+export const onCreatePlatformTags = /* GraphQL */ `
+  subscription OnCreatePlatformTags($owner: String) {
+    onCreatePlatformTags(owner: $owner) {
       id
       platformID
       tagID
@@ -277,6 +242,7 @@ export const createPlatformTags = /* GraphQL */ `
         description
         domain
         iconImage
+        images
         url
         createdAt
         updatedAt
@@ -296,12 +262,9 @@ export const createPlatformTags = /* GraphQL */ `
     }
   }
 `;
-export const updatePlatformTags = /* GraphQL */ `
-  mutation UpdatePlatformTags(
-    $input: UpdatePlatformTagsInput!
-    $condition: ModelPlatformTagsConditionInput
-  ) {
-    updatePlatformTags(input: $input, condition: $condition) {
+export const onUpdatePlatformTags = /* GraphQL */ `
+  subscription OnUpdatePlatformTags($owner: String) {
+    onUpdatePlatformTags(owner: $owner) {
       id
       platformID
       tagID
@@ -311,6 +274,7 @@ export const updatePlatformTags = /* GraphQL */ `
         description
         domain
         iconImage
+        images
         url
         createdAt
         updatedAt
@@ -330,12 +294,9 @@ export const updatePlatformTags = /* GraphQL */ `
     }
   }
 `;
-export const deletePlatformTags = /* GraphQL */ `
-  mutation DeletePlatformTags(
-    $input: DeletePlatformTagsInput!
-    $condition: ModelPlatformTagsConditionInput
-  ) {
-    deletePlatformTags(input: $input, condition: $condition) {
+export const onDeletePlatformTags = /* GraphQL */ `
+  subscription OnDeletePlatformTags($owner: String) {
+    onDeletePlatformTags(owner: $owner) {
       id
       platformID
       tagID
@@ -345,6 +306,7 @@ export const deletePlatformTags = /* GraphQL */ `
         description
         domain
         iconImage
+        images
         url
         createdAt
         updatedAt

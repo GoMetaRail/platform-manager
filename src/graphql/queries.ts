@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
@@ -18,6 +19,7 @@ export const getPlatform = /* GraphQL */ `
       }
       domain
       iconImage
+      images
       network {
         id
         name
@@ -48,6 +50,7 @@ export const listPlatforms = /* GraphQL */ `
         description
         domain
         iconImage
+        images
         url
         createdAt
         updatedAt
@@ -82,6 +85,7 @@ export const searchPlatforms = /* GraphQL */ `
         description
         domain
         iconImage
+        images
         url
         createdAt
         updatedAt
@@ -342,6 +346,7 @@ export const getPlatformTags = /* GraphQL */ `
         description
         domain
         iconImage
+        images
         url
         createdAt
         updatedAt
