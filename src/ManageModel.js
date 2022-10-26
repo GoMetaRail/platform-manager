@@ -41,7 +41,6 @@ function Update(props) {
 
   async function fetchitem() {
     if (props.id) {
-      console.log(query['getPlatform']);
       const apiData = await API.graphql(graphqlOperation(query[`get${itemNameSingular}`], {id: props.id}));
       const newItem = apiData.data[`get${itemNameSingular}`];
 
