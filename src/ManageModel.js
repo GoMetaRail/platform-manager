@@ -130,6 +130,7 @@ function Update(props) {
           ));
           tmpItem = apiData.data[`create${itemNameSingular}`];
         }
+        const updatedItem = {...tmpItem};
 
         // Update join table entries
         for (const field of itemFields) {
@@ -137,9 +138,9 @@ function Update(props) {
             const origRelatedIds = origItem[field.name] ?? [];
             for (const relatedItem of item[field.name] ?? []) {
               const relationObj = {};
-              relationObj['id'] = `${tmpItem.id}|${relatedItem.id}`;
+              relationObj['id'] = `${updatedItem.id}|${relatedItem.id}`;
               relationObj[field.manyToMany.id] = relatedItem.id;
-              relationObj[`${itemNameSingular.toLowerCase()}ID`] = tmpItem.id;
+              relationObj[`${itemNameSingular.toLowerCase()}ID`] = updatedItem.id;
               const createOrUpdate = origRelatedIds.includes(relatedItem.id) ? 'update' : 'create';
               await API.graphql(graphqlOperation(mutation[`${createOrUpdate}${field.manyToMany.relationship}`], {
                 input: relationObj
@@ -153,7 +154,7 @@ function Update(props) {
               for (const deletedId of deletedIds) {
                 await API.graphql(graphqlOperation(mutation[`delete${field.manyToMany.relationship}`], {
                   input: {
-                    id: `${tmpItem.id}|${deletedId}`
+                    id: `${updatedItem.id}|${deletedId}`
                   }
                 }));
               }
@@ -165,9 +166,9 @@ function Update(props) {
         for (const [index, field] of itemFields.entries()) {
           const ref = fieldRefs.current[index].current;
           if (ref.isUploader) {
-            const uploadedFiles = await ref.upload(`${tmpItem.id}/`);
+            const uploadedFiles = await ref.upload(`${updatedItem.id}/`);
             sanitizedItem[field.name] = (ref.isList() ? uploadedFiles : uploadedFiles[0]) ?? '';
-
+            sanitizedItem['id'] = updatedItem.id;
             // Update entry in the db
             await API.graphql(graphqlOperation(mutation[`update${itemNameSingular}`], {
                 input: sanitizedItem
@@ -176,8 +177,8 @@ function Update(props) {
           }
         }
 
-        setItem(tmpItem);
-        setOrigItem(tmpItem);
+        setItem(updatedItem);
+        setOrigItem(updatedItem);
         navigate(baseRoute);
         pushAlert(`${itemNameSingular} ${item.id ? 'updated' : 'added'}`, 'success');
       } catch (err) {
