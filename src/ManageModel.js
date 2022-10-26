@@ -114,78 +114,82 @@ function Update(props) {
         sanitizedItem[field.name] = item[field.name];
       });
 
-      try {
-        let tmpItem;
-        if (item.id) {
-          tmpItem = item;
-          sanitizedItem['id'] = item.id;
+      let tmpItem;
+      if (item.id) {
+        tmpItem = item;
+        sanitizedItem['id'] = item.id;
+        await API.graphql(graphqlOperation(mutation[`update${itemNameSingular}`], {
+            input: sanitizedItem
+          }
+        ));
+      } else {
+        const apiData = await API.graphql(graphqlOperation(mutation[`create${itemNameSingular}`], {
+            input: sanitizedItem
+          }
+        ));
+        tmpItem = apiData.data[`create${itemNameSingular}`];
+      }
+      const updatedItem = {...tmpItem};
+
+      // Update join table entries
+      for (const field of itemFields) {
+        if (field.manyToMany) {
+          const origRelatedIds = origItem[field.name] ?? [];
+          for (const relatedItem of item[field.name] ?? []) {
+            const relationObj = {};
+            relationObj['id'] = `${updatedItem.id}|${relatedItem.id}`;
+            relationObj[field.manyToMany.id] = relatedItem.id;
+            relationObj[`${itemNameSingular.toLowerCase()}ID`] = updatedItem.id;
+            const createOrUpdate = origRelatedIds.includes(relatedItem.id) ? 'update' : 'create';
+            await API.graphql(graphqlOperation(mutation[`${createOrUpdate}${field.manyToMany.relationship}`], {
+              input: relationObj
+            }));
+          }
+
+          if (origRelatedIds.length !== 0) {
+            // Delete removed entries
+            const updatedIds = item[field.name].map(i => i.id);
+            const deletedIds = origRelatedIds.filter(i => !updatedIds.includes(i));
+            for (const deletedId of deletedIds) {
+              await API.graphql(graphqlOperation(mutation[`delete${field.manyToMany.relationship}`], {
+                input: {
+                  id: `${updatedItem.id}|${deletedId}`
+                }
+              }));
+            }
+          }
+        }
+      }
+
+      // Update uploads
+      for (const [index, field] of itemFields.entries()) {
+        const ref = fieldRefs.current[index].current;
+        if (ref.isUploader) {
+          const uploadedFiles = await ref.upload(`${updatedItem.id}/`);
+          sanitizedItem[field.name] = (ref.isList() ? uploadedFiles : uploadedFiles[0]) ?? '';
+          sanitizedItem['id'] = updatedItem.id;
+          // Update entry in the db
           await API.graphql(graphqlOperation(mutation[`update${itemNameSingular}`], {
               input: sanitizedItem
             }
           ));
-        } else {
-          const apiData = await API.graphql(graphqlOperation(mutation[`create${itemNameSingular}`], {
-              input: sanitizedItem
-            }
-          ));
-          tmpItem = apiData.data[`create${itemNameSingular}`];
         }
-
-        // Update join table entries
-        for (const field of itemFields) {
-          if (field.manyToMany) {
-            const origRelatedIds = origItem[field.name] ?? [];
-            for (const relatedItem of item[field.name] ?? []) {
-              const relationObj = {};
-              relationObj['id'] = `${tmpItem.id}|${relatedItem.id}`;
-              relationObj[field.manyToMany.id] = relatedItem.id;
-              relationObj[`${itemNameSingular.toLowerCase()}ID`] = tmpItem.id;
-              const createOrUpdate = origRelatedIds.includes(relatedItem.id) ? 'update' : 'create';
-              await API.graphql(graphqlOperation(mutation[`${createOrUpdate}${field.manyToMany.relationship}`], {
-                input: relationObj
-              }));
-            }
-
-            if (origRelatedIds.length !== 0) {
-              // Delete removed entries
-              const updatedIds = item[field.name].map(i => i.id);
-              const deletedIds = origRelatedIds.filter(i => !updatedIds.includes(i));
-              for (const deletedId of deletedIds) {
-                await API.graphql(graphqlOperation(mutation[`delete${field.manyToMany.relationship}`], {
-                  input: {
-                    id: `${tmpItem.id}|${deletedId}`
-                  }
-                }));
-              }
-            }
-          }
-        }
-
-        // Update uploads
-        for (const [index, field] of itemFields.entries()) {
-          const ref = fieldRefs.current[index].current;
-          if (ref.isUploader) {
-            const uploadedFiles = await ref.upload(`${tmpItem.id}/`);
-            sanitizedItem[field.name] = (ref.isList() ? uploadedFiles : uploadedFiles[0]) ?? '';
-
-            // Update entry in the db
-            await API.graphql(graphqlOperation(mutation[`update${itemNameSingular}`], {
-                input: sanitizedItem
-              }
-            ));
-          }
-        }
-
-        setItem(tmpItem);
-        setOrigItem(tmpItem);
-        navigate(baseRoute);
-        pushAlert(`${itemNameSingular} ${item.id ? 'updated' : 'added'}`, 'success');
-      } catch (err) {
-        pushAlert(`Error saving ${itemNameSingular.toLowerCase()}. ${err}`, 'error');
       }
+
+      setItem(updatedItem);
+      setOrigItem(updatedItem);
+      navigate(baseRoute);
+      pushAlert(`${itemNameSingular} ${item.id ? 'updated' : 'added'}`, 'success');
     } catch (e) {
-      console.error(e);
-      e.errors.forEach(error => pushAlert(error.message, 'error'));
+      let errors = [e];
+      if (e.hasOwnProperty('errors')) {
+        errors = e.errors;
+      }
+
+      errors.forEach(error => {
+        console.error(error);
+        pushAlert(error.message, 'error');
+      });
     } finally {
       setIsSaving(false);
     }
@@ -219,10 +223,15 @@ function Update(props) {
       pushAlert(`${itemNameSingular} deleted`, 'success');
       navigate(baseRoute);
     } catch (e) {
-      console.error(e);
-      pushAlert(e.errors.forEach((error) => {
+      let errors = [e];
+      if (e.hasOwnProperty('errors')) {
+        errors = e.errors;
+      }
+
+      errors.forEach(error => {
+        console.error(error);
         pushAlert(error.message, 'error');
-      }));
+      });
     } finally {
       setIsLoading(false);
     }
