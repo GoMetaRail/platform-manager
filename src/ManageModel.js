@@ -343,7 +343,11 @@ function List(props) {
         if (q) {
           const apiData = await API.graphql(graphqlOperation(searchQuery ?? query[`search${itemNamePlural}`], {
             filter: {
-              name: {wildcard: `*${q.toLowerCase()}*`}
+              and: q.split(' ').map((word) => {
+                return {
+                  name: {wildcard: `*${word.toLowerCase()}*`}
+                }
+              })
             },
             limit: itemsPerPage,
             nextToken
