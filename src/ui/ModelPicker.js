@@ -3,7 +3,6 @@ import 'react-select-search/style.css';
 import * as query from "../graphql/queries";
 import {API, graphqlOperation} from "aws-amplify";
 import {Collection, Card, Link} from "@aws-amplify/ui-react";
-import {type} from "@testing-library/user-event/dist/type";
 
 function ModelPicker(props, ref) {
   const {onChange, isDisabled, name, value, maxLength, itemNameSingular, itemNamePlural} = props;
@@ -56,18 +55,34 @@ function ModelPicker(props, ref) {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(async () => {
       try {
+        const searchFilter = q.split(' ').map((word) => {
+          return {
+            name: {wildcard: `*${word.toLowerCase()}*`}
+          }
+        });
+
+        for (const selectedOption of selected) {
+          searchFilter.push({
+            id: {ne: selectedOption.id}
+          });
+        }
+
         const apiData = await API.graphql(graphqlOperation(query[`search${itemNamePlural}`], {
           limit: 3,
           filter: {
-            name: {wildcard: `*${q.toLowerCase()}*`}
+            and: searchFilter
           }
         }));
         setOptions(apiData['data'][`search${itemNamePlural}`].items);
       } catch (e) {
         console.error(e);
-        setOptions([]);
+        clearOptions();
       }
     }, 250);
+  }
+
+  function clearOptions() {
+    setOptions([]);
   }
 
   function triggerOnChange(newSelected) {
@@ -135,13 +150,24 @@ function ModelPicker(props, ref) {
           onOptionSelected={selectItem}
           options={options}
           disabled={isDisabled || selected.length >= maxLength}
-          onChange={e => searchItems(e.target.value)}
-          onBlur={e => setOptions([])}
+          onBlur={e => clearOptions()}
           filterOption={filterItem}
           displayOption={'name'}
           maxVisible={3}
           placeholder={`Search ${itemNamePlural.toLowerCase()}...`}
           ref={typeaheadRef}
+          onKeyUp={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              if (options.length !== 0) {
+                selectItem(options[0]);
+              }
+
+              return false;
+            } else {
+              searchItems(event.target.value);
+            }
+          }}
           customClasses={{
             input: "typeahead-input amplify-input amplify-field-group__control",
             results: "typeahead-results amplify-flex amplify-collection-items",
