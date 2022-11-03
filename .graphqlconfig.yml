@@ -2,13 +2,13 @@ projects:
   GoMetaRail:
     schemaPath: amplify/backend/api/GoMetaRail/build/schema.graphql
     includes:
-      - src/graphql/**/*.ts
+      - src/graphql/**/*.js
     excludes:
       - ./amplify/**
     extensions:
       amplify:
-        codeGenTarget: typescript
-        generatedFileName: src/API.ts
+        codeGenTarget: javascript
+        generatedFileName: ''
         docsFilePath: src/graphql
         region: us-east-2
         apiId: null

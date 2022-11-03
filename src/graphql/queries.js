@@ -22,6 +22,8 @@ export const getPlatform = /* GraphQL */ `
       network {
         id
         name
+        symbol
+        image
         config
         method
         createdAt
@@ -260,6 +262,8 @@ export const getNetwork = /* GraphQL */ `
     getNetwork(id: $id) {
       id
       name
+      symbol
+      image
       config
       method
       platforms {
@@ -280,6 +284,8 @@ export const listNetworks = /* GraphQL */ `
       items {
         id
         name
+        symbol
+        image
         config
         method
         createdAt
@@ -309,6 +315,8 @@ export const searchNetworks = /* GraphQL */ `
       items {
         id
         name
+        symbol
+        image
         config
         method
         createdAt
