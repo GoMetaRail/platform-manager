@@ -23,6 +23,8 @@ export const onCreatePlatform = /* GraphQL */ `
       network {
         id
         name
+        symbol
+        image
         config
         method
         createdAt
@@ -58,6 +60,8 @@ export const onUpdatePlatform = /* GraphQL */ `
       network {
         id
         name
+        symbol
+        image
         config
         method
         createdAt
@@ -93,6 +97,8 @@ export const onDeletePlatform = /* GraphQL */ `
       network {
         id
         name
+        symbol
+        image
         config
         method
         createdAt
@@ -190,6 +196,8 @@ export const onCreateNetwork = /* GraphQL */ `
     onCreateNetwork {
       id
       name
+      symbol
+      image
       config
       method
       platforms {
@@ -205,6 +213,8 @@ export const onUpdateNetwork = /* GraphQL */ `
     onUpdateNetwork {
       id
       name
+      symbol
+      image
       config
       method
       platforms {
@@ -220,6 +230,8 @@ export const onDeleteNetwork = /* GraphQL */ `
     onDeleteNetwork {
       id
       name
+      symbol
+      image
       config
       method
       platforms {

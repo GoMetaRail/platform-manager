@@ -47,6 +47,8 @@ type Network @model @searchable @auth(rules: [
 ]) {
     id: ID!
     name: String!
+    symbol: String
+    image: String
     config: String!
     method: String
     platforms: [Platform] @hasMany

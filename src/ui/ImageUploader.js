@@ -52,11 +52,17 @@ function ImageUploader(props, ref) {
           }
         }
 
+        // Only allow deletion of images (instead of folders, etc.)
         const safeDelete = async (key) => {
-          // Only allow deletion of images (instead of folders, etc.)
-          if (key.endsWith('.jpg')) {
-            Storage.remove(key);
+          for (const type of fileTypes) {
+            const fileExtension = `.${type.split('/').pop()}`;
+            if(key.endsWith(fileExtension)) {
+              return Storage.remove(key);
+            }
           }
+
+          console.error('Deletion blocked', key, fileTypes);
+          return false;
         }
 
         // Delete removed uploads
@@ -73,7 +79,8 @@ function ImageUploader(props, ref) {
           }
 
           const suffix = maxLength && maxLength > 1 ? `-${index + 1}` : '';
-          let fileName = `${namePrepend}${name}${suffix}-${Date.now()}.jpg`;
+          const fileExtension = `.${fileObj.type.split('/').pop()}`;
+          let fileName = `${namePrepend}${name}${suffix}-${Date.now()}${fileExtension}`;
 
           if (fileObj.isUploaded) {
             // Rename the file by copying it first and append a version to the filename
@@ -91,6 +98,10 @@ function ImageUploader(props, ref) {
             uploadedFiles.push(fileName);
           } else {
             const file = fileObj.file;
+
+            if (!fileTypes.includes(fileObj.type)) {
+              throw new Error('File is not of an allowed type');
+            }
 
             if (maxFileSize && file.size > maxFileSize) {
               throw new Error(`File is greater than max filesize of ${prettyBytes(maxFileSize)}`);
@@ -120,8 +131,16 @@ function ImageUploader(props, ref) {
 
       const newFiles = tmpValue.map((key, index) => {
         const suffix = maxLength && maxLength > 1 ? `-${index + 1}` : '';
+
+        const fileExtension = key.split('.').pop();
+        let fileType = 'image/jpg';
+        if (fileExtension && fileExtension.toLowerCase() === '.png') {
+          fileType = 'image/png';
+        }
+
         return {
           name: name + suffix,
+          type: fileType,
           url: process.env.REACT_APP_IMG_URL + key,
           isUploaded: true,
           key: key
@@ -164,6 +183,7 @@ function ImageUploader(props, ref) {
         return {
           name: i.name,
           url: URL.createObjectURL(i),
+          type: i.type,
           isUploaded: false,
           file: i
         }
@@ -249,7 +269,7 @@ function ImageUploader(props, ref) {
           isLoading={uploading}
           isDisabled={isDisabled || (maxLength && files.length >= maxLength)}
         >
-          { maxLength === 1 && 'Choose Upload' || 'Choose Uploads' }
+          {maxLength === 1 && 'Choose Upload' || 'Choose Uploads'}
         </Button>
       </div>
     </div>
