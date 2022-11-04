@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useImperativeHandle, useRef} from 'react';
 import 'react-select-search/style.css';
-import * as query from "../graphql/queries";
+import * as query from "@gometarail/gometarail/graphql/queries";
 import {API, graphqlOperation} from "aws-amplify";
 import {Collection, Card, Link} from "@aws-amplify/ui-react";
 import {type} from "@testing-library/user-event/dist/type";
