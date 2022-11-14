@@ -13,8 +13,8 @@ import {
   SearchField
 } from '@aws-amplify/ui-react';
 import {API, graphqlOperation} from 'aws-amplify';
-import * as query from "./graphql/queries";
-import * as mutation from "./graphql/mutations";
+import * as query from "@gometarail/gometarail/graphql/queries";
+import * as mutation from "@gometarail/gometarail/graphql/mutations";
 
 import {
   useNavigate, useParams
