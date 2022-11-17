@@ -17,6 +17,46 @@ type Platform @model @searchable @auth(rules: [
     url: String!
 }
 
+type FeaturedEvent @model @searchable @auth(rules: [
+    { allow: groups, groups: ["Admin"] }
+    { allow: private, operations: [read]}
+    { allow: owner, operations: [read, update] }
+    { allow: public, operations: [read], provider: iam}
+    { allow: public, operations: [read], provider: apiKey}
+]) {
+    id: ID!
+    name: String!
+    description: String
+    schedules: [Schedule]
+    liveFrom: AWSDateTime!
+    liveTo: AWSDateTime!
+}
+
+type Schedule @model @searchable @auth(rules: [
+    { allow: groups, groups: ["Admin"] }
+    { allow: private, operations: [read]}
+    { allow: owner, operations: [read, update] }
+    { allow: public, operations: [read], provider: iam}
+    { allow: public, operations: [read], provider: apiKey}
+]) {
+    id: ID!
+    date: AWSDate!
+    platformAgenda: [PlatformAgenda]
+}
+
+type PlatformAgenda @model @searchable @auth(rules: [
+    { allow: groups, groups: ["Admin"] }
+    { allow: private, operations: [read]}
+    { allow: owner, operations: [read, update] }
+    { allow: public, operations: [read], provider: iam}
+    { allow: public, operations: [read], provider: apiKey}
+]) {
+    id: ID!
+    platform: Platform!
+    description: String!
+    date: AWSDateTime!
+}
+
 type Category @model @searchable @auth(rules: [
     { allow: groups, groups: ["Admin"] }
     { allow: private, operations: [read]}

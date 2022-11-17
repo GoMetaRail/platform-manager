@@ -1,0 +1,48 @@
+## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put("hasAuth", true))
+#set( $isAuthorized = false )
+#set( $totalFields = ["id","name","platforms","createdAt","updatedAt"] )
+#set( $allowedAggFields = ["createdAt","updatedAt","id","name","platforms"] )
+#if( $util.authType() == "API Key Authorization" )
+  #set( $isAuthorized = true )
+  #set( $allowedAggFields = $totalFields )
+#end
+#if( $util.authType() == "IAM Authorization" )
+  #set( $adminRoles = ["us-east-2_6C7tE9oCc_Full-access/CognitoIdentityCredentials","us-east-2_6C7tE9oCc_Manage-only/CognitoIdentityCredentials","amplify-platformmanager-dev-142115-unauthRole"] )
+  #foreach( $adminRole in $adminRoles )
+    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
+      #return($util.toJson({}))
+    #end
+  #end
+  #if( !$isAuthorized )
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+      #set( $allowedAggFields = $totalFields )
+    #end
+  #end
+#end
+#if( $util.authType() == "User Pool Authorization" )
+  #set( $allowedAggFields = $totalFields )
+  #set( $isAuthorized = true )
+  #if( !$isAuthorized )
+    #set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"Admin"}] )
+    #foreach( $groupRole in $staticGroupRoles )
+      #set( $groupsInToken = $util.defaultIfNull($ctx.identity.claims.get($groupRole.claim), []) )
+      #if( $groupsInToken.contains($groupRole.entity) )
+        #set( $isAuthorized = true )
+        #if( $util.isNull($groupRole.allowedFields) )
+          #set( $allowedAggFields = $totalFields )
+          #break
+        #else
+          $util.qr($allowedAggFields.addAll($groupRole.allowedFields))
+        #end
+      #end
+    #end
+  #end
+#end
+$util.qr($ctx.stash.put("allowedAggFields", $allowedAggFields))
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({"version":"2018-05-29","payload":{}})
+## [End] Authorization Steps. **
