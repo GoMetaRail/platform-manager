@@ -1,0 +1,62 @@
+---
+plan:
+  - input:
+      table: Category-e4gu4fakirgfrplzgroyp2o43a-prod
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    output:
+      table: Category-fgl5rue5hrgmjeay45of5gc2kq-stage
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    stream:
+      disabled: true
+    backfill:
+      disabled: false
+  - input:
+      table: Network-e4gu4fakirgfrplzgroyp2o43a-prod
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    output:
+      table: Network-fgl5rue5hrgmjeay45of5gc2kq-stage
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    stream:
+      disabled: true
+    backfill:
+      disabled: false
+  - input:
+      table: Platform-e4gu4fakirgfrplzgroyp2o43a-prod
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    output:
+      table: Platform-fgl5rue5hrgmjeay45of5gc2kq-stage
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    stream:
+      disabled: true
+    backfill:
+      disabled: false
+  - input:
+      table: PlatformTags-e4gu4fakirgfrplzgroyp2o43a-prod
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    output:
+      table: PlatformTags-fgl5rue5hrgmjeay45of5gc2kq-stage
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    stream:
+      disabled: true
+    backfill:
+      disabled: false
+  - input:
+      table: Tag-e4gu4fakirgfrplzgroyp2o43a-prod
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    output:
+      table: Tag-fgl5rue5hrgmjeay45of5gc2kq-stage
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    stream:
+      disabled: true
+    backfill:
+      disabled: false
