@@ -7,6 +7,6 @@ export default React.forwardRef((props, ref) => {
     ...props,
     maxLength: 1,
     maxFileSize: 40000, // 40kb
-    fileTypes: ['image/jpeg']
+    fileTypes: ['image/jpg', 'image/jpeg']
   }, ref);
 });
