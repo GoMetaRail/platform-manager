@@ -27,7 +27,7 @@ type FeaturedEvent @model @searchable @auth(rules: [
     id: ID!
     name: String!
     description: String
-    schedules: [Schedule]
+    schedules: [Schedule] @hasMany
     liveFrom: AWSDateTime!
     liveTo: AWSDateTime!
 }
@@ -41,7 +41,7 @@ type Schedule @model @searchable @auth(rules: [
 ]) {
     id: ID!
     date: AWSDate!
-    platformAgenda: [PlatformAgenda]
+    platformAgendas: [PlatformAgenda] @hasMany
 }
 
 type PlatformAgenda @model @searchable @auth(rules: [

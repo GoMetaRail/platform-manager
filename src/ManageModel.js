@@ -15,6 +15,7 @@ import {
 import {API, graphqlOperation} from 'aws-amplify';
 import * as query from "@gometarail/gometarail/graphql/queries";
 import * as mutation from "@gometarail/gometarail/graphql/mutations";
+import moment from "moment";
 
 import {
   useNavigate, useParams
@@ -93,7 +94,9 @@ function Update(props) {
         return;
       }
 
-      const sanitizedItem = {};
+      const sanitizedItem = {
+        // schedules: []
+      };
       itemFields.forEach((field, index) => {
         const ref = fieldRefs.current[index].current;
 
@@ -109,6 +112,8 @@ function Update(props) {
         sanitizedItem[field.name] = item[field.name];
       });
 
+      console.log('dw', sanitizedItem);
+
       let tmpItem;
       if (item.id) {
         tmpItem = item;
@@ -118,7 +123,7 @@ function Update(props) {
           }
         ));
       } else {
-        console.log(`create${itemNameSingular.replace(' ', '')}`, mutation);
+        console.log(`create${itemNameSingular.replace(' ', '')}`, mutation[`create${itemNameSingular.replace(' ', '')}`]);
         const apiData = await API.graphql(graphqlOperation(mutation[`create${itemNameSingular.replace(' ', '')}`], {
             input: sanitizedItem
           }
@@ -436,6 +441,8 @@ function List(props) {
                             val = val.name;
                           } else if (field.showCountInList) {
                             val = Array.isArray(val) ? val.length : '0';
+                          } else if (field.isDateTime) {
+                            val = moment(val).format("dddd, MMMM Do YYYY, h:mm:ss a");
                           }
                           return (
                             <p

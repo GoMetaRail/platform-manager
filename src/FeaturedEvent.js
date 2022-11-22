@@ -26,14 +26,17 @@ function Page() {
         name: 'liveFrom',
         label: 'Starts at',
         type: DateTimeInput,
-        showInList: true
+        showInList: true,
+        isDateTime: true
       },
       {
         name: 'liveTo',
         label: 'Ends at',
         type: DateTimeInput,
-        showInList: true
+        showInList: true,
+        isDateTime: true
       },
+      // todo: Add Schedules object
     ]
   );
 }

@@ -6,7 +6,7 @@ import moment from "moment";
 export default React.forwardRef((props, ref) => {
   function DateTimeInput(props, ref) {
     const {onChange, isDisabled, isRequired, name, value, maxLength, itemNameSingular, itemNamePlural} = props;
-    const [dateValue, setDateValue] = useState(moment(value).format('yyyy-MM-DDTkk:mm:ss.SSS'));
+    const [dateValue, setDateValue] = useState(moment(value).format('yyyy-MM-DDTkk:mm:ss'));
     useImperativeHandle(ref, () => ({}));
 
     function transformValue(value) {
@@ -23,7 +23,7 @@ export default React.forwardRef((props, ref) => {
         }
       });
 
-      setDateValue(moment(date).format('yyyy-MM-DDTkk:mm:ss.SSS'));
+      setDateValue(moment(date).format('yyyy-MM-DDTkk:mm:ss'));
     }
 
     let inputProps = {
