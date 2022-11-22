@@ -112,6 +112,8 @@ function Update(props) {
         sanitizedItem[field.name] = item[field.name];
       });
 
+      console.log('dw', sanitizedItem);
+
       let tmpItem;
       if (item.id) {
         tmpItem = item;

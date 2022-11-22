@@ -46,6 +46,7 @@ function Page() {
         showInList: true,
         isDateTime: true
       },
+      // todo: Add Schedules object
     ]
   );
 }
