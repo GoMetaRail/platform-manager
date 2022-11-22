@@ -9,15 +9,19 @@ frontend:
   phases:
     preBuild:
       commands:
+    build:
+      commands:
+        - echo "add deploy key"
         - eval "$(ssh-agent -s)"
         - ssh-add <(echo "$DEPLOY_KEY" | base64 -d)
+
         - echo "disable strict host key check"
         - mkdir ~/.ssh
         - touch ~/.ssh/config
         - 'echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+
         - npm ci
-    build:
-      commands:
+
         - echo "REACT_APP_IMG_URL=${REACT_APP_IMG_URL}" >> .env
         - npm run build
   artifacts:
