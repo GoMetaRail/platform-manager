@@ -8,17 +8,13 @@ import {
   Grid,
   Heading,
   Image,
-  Link,
   Loader,
   Pagination,
-  ScrollView,
-  SearchField,
-  TextAreaField,
-  TextField
+  SearchField
 } from '@aws-amplify/ui-react';
 import {API, graphqlOperation} from 'aws-amplify';
-import * as query from "./graphql/queries";
-import * as mutation from "./graphql/mutations";
+import * as query from "@gometarail/gometarail/graphql/queries";
+import * as mutation from "@gometarail/gometarail/graphql/mutations";
 
 import {
   useNavigate, useParams
@@ -164,7 +160,7 @@ function Update(props) {
       for (const [index, field] of itemFields.entries()) {
         const ref = fieldRefs.current[index].current;
         if (ref.isUploader) {
-          const uploadedFiles = await ref.upload(`${updatedItem.id}/`);
+          const uploadedFiles = await ref.upload(`${itemNameSingular.replace(' ', '-').toLowerCase()}/${updatedItem.id}/`);
           sanitizedItem[field.name] = (ref.isList() ? uploadedFiles : uploadedFiles[0]) ?? '';
           sanitizedItem['id'] = updatedItem.id;
           // Update entry in the db
@@ -347,7 +343,11 @@ function List(props) {
         if (q) {
           const apiData = await API.graphql(graphqlOperation(searchQuery ?? query[`search${itemNamePlural}`], {
             filter: {
-              name: {wildcard: `*${q.toLowerCase()}*`}
+              and: q.split(' ').map((word) => {
+                return {
+                  name: {wildcard: `*${word.toLowerCase()}*`}
+                }
+              })
             },
             limit: itemsPerPage,
             nextToken

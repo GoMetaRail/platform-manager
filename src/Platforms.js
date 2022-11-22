@@ -23,7 +23,7 @@ function Page() {
       {
         name: 'iconImage',
         label: 'Icon Image',
-        description: '512x410, max 40kb',
+        description: '512x410 jpg, max 40kb',
         required: true,
         type: IconImageUploader,
         isImage: true,
@@ -71,7 +71,7 @@ function Page() {
       {
         name: 'images',
         label: 'Preview Images',
-        description: '1920x1080, max 300kb',
+        description: '1920x1080 jpg, max 300kb',
         required: false,
         showInList: true,
         showCountInList: true,
