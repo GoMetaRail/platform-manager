@@ -11,8 +11,8 @@ type Platform @model @searchable @auth(rules: [
     description: String
     tags: [Tag] @manyToMany(relationName: "PlatformTags")
     domain: String!
-    iconImage: String
-    images: [String]
+    iconImage: String!
+    images: [String!]
     network: Network! @belongsTo
     url: String!
 }
@@ -26,8 +26,9 @@ type FeaturedEvent @model @searchable @auth(rules: [
 ]) {
     id: ID!
     name: String!
+    iconImage: String!
     description: String
-    schedules: [Schedule] @hasMany
+    schedules: [Schedule!] @hasMany
     liveFrom: AWSDateTime!
     liveTo: AWSDateTime!
 }
@@ -41,7 +42,7 @@ type Schedule @model @searchable @auth(rules: [
 ]) {
     id: ID!
     date: AWSDate!
-    platformAgendas: [PlatformAgenda] @hasMany
+    platformAgendas: [PlatformAgenda!] @hasMany
 }
 
 type PlatformAgenda @model @searchable @auth(rules: [
@@ -52,9 +53,9 @@ type PlatformAgenda @model @searchable @auth(rules: [
     { allow: public, operations: [read], provider: apiKey}
 ]) {
     id: ID!
-    platform: Platform!
+    platform: Platform! @hasOne
     description: String!
-    date: AWSDateTime!
+    time: AWSTime!
 }
 
 type Category @model @searchable @auth(rules: [

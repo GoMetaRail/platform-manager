@@ -2,6 +2,7 @@ import React from 'react';
 import ManageModel from "./ManageModel";
 import {TextAreaField, TextField} from "@aws-amplify/ui-react";
 import DateTimeInput from "./ui/DateTimeInput";
+import EventIconImageUploader from "./ui/EventIconImageUploader";
 
 function Page() {
   return ManageModel(
@@ -17,10 +18,19 @@ function Page() {
         showInList: true
       },
       {
+        name: 'iconImage',
+        label: 'Icon Image',
+        description: '1500x410 jpg, max 100kb',
+        required: true,
+        type: EventIconImageUploader,
+        isImage: true,
+        showInList: true
+      },
+      {
         name: 'description',
         label: 'Description',
         type: TextAreaField,
-        showInList: true
+        showInList: false
       },
       {
         name: 'liveFrom',
@@ -36,7 +46,6 @@ function Page() {
         showInList: true,
         isDateTime: true
       },
-      // todo: Add Schedules object
     ]
   );
 }
