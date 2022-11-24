@@ -23,6 +23,7 @@ import Platforms from "./Platforms";
 import Categories from "./Categories";
 import Tags from "./Tags";
 import Networks from "./Networks";
+import FeaturedEvent from "./FeaturedEvent";
 
 Amplify.configure({
   ...awsExports
@@ -70,7 +71,8 @@ function Dashboard({isPassedToWithAuthenticator, signOut, user}) {
           columnEnd="2"
           id="sidebarMenu"
         >
-          <NavLink exact to="/platform/">Platforms</NavLink>
+          <NavLink to="/platform/">Platforms</NavLink>
+          <NavLink to="/event/">Events</NavLink>
           <NavLink to="/category/">Categories</NavLink>
           <NavLink to="/tag/">Tags</NavLink>
           <NavLink to="/network/">Networks</NavLink>
@@ -81,6 +83,7 @@ function Dashboard({isPassedToWithAuthenticator, signOut, user}) {
         >
           <Routes>
             <Route path="/platform/*" element={<Platforms/>}/>
+            <Route path="/event/*" element={<FeaturedEvent/>}/>
             <Route path="/network/*" element={<Networks/>}/>
             <Route path="/category/*" element={<Categories/>}/>
             <Route path="/tag/*" element={<Tags/>}/>
