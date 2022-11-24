@@ -114,4 +114,6 @@ const clientSchemaExtensions = gql`
     directive @manyToMany(relationName: String) on FIELD_DEFINITION
 
     scalar AWSDateTime
+    scalar AWSDate
+    scalar AWSTime
 `;

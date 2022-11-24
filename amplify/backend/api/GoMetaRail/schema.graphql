@@ -11,10 +11,51 @@ type Platform @model @searchable @auth(rules: [
     description: String
     tags: [Tag] @manyToMany(relationName: "PlatformTags")
     domain: String!
-    iconImage: String
-    images: [String]
+    iconImage: String!
+    images: [String!]
     network: Network! @belongsTo
     url: String!
+}
+
+type FeaturedEvent @model @searchable @auth(rules: [
+    { allow: groups, groups: ["Admin"] }
+    { allow: private, operations: [read]}
+    { allow: owner, operations: [read, update] }
+    { allow: public, operations: [read], provider: iam}
+    { allow: public, operations: [read], provider: apiKey}
+]) {
+    id: ID!
+    name: String!
+    iconImage: String!
+    description: String
+    schedules: [Schedule!] @hasMany
+    liveFrom: AWSDateTime!
+    liveTo: AWSDateTime!
+}
+
+type Schedule @model @searchable @auth(rules: [
+    { allow: groups, groups: ["Admin"] }
+    { allow: private, operations: [read]}
+    { allow: owner, operations: [read, update] }
+    { allow: public, operations: [read], provider: iam}
+    { allow: public, operations: [read], provider: apiKey}
+]) {
+    id: ID!
+    date: AWSDate!
+    platformAgendas: [PlatformAgenda!] @hasMany
+}
+
+type PlatformAgenda @model @searchable @auth(rules: [
+    { allow: groups, groups: ["Admin"] }
+    { allow: private, operations: [read]}
+    { allow: owner, operations: [read, update] }
+    { allow: public, operations: [read], provider: iam}
+    { allow: public, operations: [read], provider: apiKey}
+]) {
+    id: ID!
+    platform: Platform! @hasOne
+    description: String!
+    time: AWSTime!
 }
 
 type Category @model @searchable @auth(rules: [
@@ -47,8 +88,8 @@ type Network @model @searchable @auth(rules: [
 ]) {
     id: ID!
     name: String!
-    symbol: String
-    image: String
+    symbol: String!
+    image: String!
     config: String!
     method: String
     platforms: [Platform] @hasMany

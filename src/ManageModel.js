@@ -15,6 +15,7 @@ import {
 import {API, graphqlOperation} from 'aws-amplify';
 import * as query from "@gometarail/gometarail/graphql/queries";
 import * as mutation from "@gometarail/gometarail/graphql/mutations";
+import moment from "moment";
 
 import {
   useNavigate, useParams
@@ -37,8 +38,8 @@ function Update(props) {
 
   async function fetchitem() {
     if (props.id) {
-      const apiData = await API.graphql(graphqlOperation(query[`get${itemNameSingular}`], {id: props.id}));
-      const newItem = apiData.data[`get${itemNameSingular}`];
+      const apiData = await API.graphql(graphqlOperation(query[`get${itemNameSingular.replace(' ', '')}`], {id: props.id}));
+      const newItem = apiData.data[`get${itemNameSingular.replace(' ', '')}`];
 
       for (const field of itemFields) {
         if (field.manyToMany) {
@@ -93,7 +94,9 @@ function Update(props) {
         return;
       }
 
-      const sanitizedItem = {};
+      const sanitizedItem = {
+        // schedules: []
+      };
       itemFields.forEach((field, index) => {
         const ref = fieldRefs.current[index].current;
 
@@ -113,16 +116,17 @@ function Update(props) {
       if (item.id) {
         tmpItem = item;
         sanitizedItem['id'] = item.id;
-        await API.graphql(graphqlOperation(mutation[`update${itemNameSingular}`], {
+        await API.graphql(graphqlOperation(mutation[`update${itemNameSingular.replace(' ', '')}`], {
             input: sanitizedItem
           }
         ));
       } else {
-        const apiData = await API.graphql(graphqlOperation(mutation[`create${itemNameSingular}`], {
+        console.log(`create${itemNameSingular.replace(' ', '')}`, mutation[`create${itemNameSingular.replace(' ', '')}`]);
+        const apiData = await API.graphql(graphqlOperation(mutation[`create${itemNameSingular.replace(' ', '')}`], {
             input: sanitizedItem
           }
         ));
-        tmpItem = apiData.data[`create${itemNameSingular}`];
+        tmpItem = apiData.data[`create${itemNameSingular.replace(' ', '')}`];
       }
       const updatedItem = {...tmpItem};
 
@@ -164,7 +168,7 @@ function Update(props) {
           sanitizedItem[field.name] = (ref.isList() ? uploadedFiles : uploadedFiles[0]) ?? '';
           sanitizedItem['id'] = updatedItem.id;
           // Update entry in the db
-          await API.graphql(graphqlOperation(mutation[`update${itemNameSingular}`], {
+          await API.graphql(graphqlOperation(mutation[`update${itemNameSingular.replace(' ', '')}`], {
               input: sanitizedItem
             }
           ));
@@ -209,7 +213,7 @@ function Update(props) {
         }
       }
 
-      const apiData = await API.graphql(graphqlOperation(mutation[`delete${itemNameSingular}`], {
+      const apiData = await API.graphql(graphqlOperation(mutation[`delete${itemNameSingular.replace(' ', '')}`], {
         input: {
           id: item.id
         }
@@ -341,7 +345,7 @@ function List(props) {
 
         let result;
         if (q) {
-          const apiData = await API.graphql(graphqlOperation(searchQuery ?? query[`search${itemNamePlural}`], {
+          const apiData = await API.graphql(graphqlOperation(searchQuery ?? query[`search${itemNamePlural.replace(' ', '')}`], {
             filter: {
               and: q.split(' ').map((word) => {
                 return {
@@ -352,13 +356,13 @@ function List(props) {
             limit: itemsPerPage,
             nextToken
           }));
-          result = apiData['data'][`search${itemNamePlural}`];
+          result = apiData['data'][`search${itemNamePlural.replace(' ', '')}`];
         } else {
-          const apiData = await API.graphql(graphqlOperation(listQuery ?? query[`list${itemNamePlural}`], {
+          const apiData = await API.graphql(graphqlOperation(listQuery ?? query[`list${itemNamePlural.replace(' ', '')}`], {
             limit: itemsPerPage,
             nextToken
           }));
-          result = apiData['data'][`list${itemNamePlural}`];
+          result = apiData['data'][`list${itemNamePlural.replace(' ', '')}`];
         }
         setItems(result.items);
         setLastSearch(q);
@@ -435,6 +439,8 @@ function List(props) {
                             val = val.name;
                           } else if (field.showCountInList) {
                             val = Array.isArray(val) ? val.length : '0';
+                          } else if (field.isDateTime) {
+                            val = moment(val).format("dddd, MMMM Do YYYY, h:mm:ss a");
                           }
                           return (
                             <p

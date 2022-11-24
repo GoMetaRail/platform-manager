@@ -34,7 +34,7 @@ function ModelPicker(props, ref) {
 
   async function loadItems(ids) {
     try {
-      const apiData = await API.graphql(graphqlOperation(query[`search${itemNamePlural}`], {
+      const apiData = await API.graphql(graphqlOperation(query[`search${itemNamePlural.replace(' ', '')}`], {
         limit: ids.length,
         filter: {
           or: ids.map(eachId => {
@@ -44,8 +44,8 @@ function ModelPicker(props, ref) {
           }, ids)
         }
       }));
-      setSelected(apiData['data'][`search${itemNamePlural}`].items);
-      triggerOnChange(apiData['data'][`search${itemNamePlural}`].items);
+      setSelected(apiData['data'][`search${itemNamePlural.replace(' ', '')}`].items);
+      triggerOnChange(apiData['data'][`search${itemNamePlural.replace(' ', '')}`].items);
     } catch (e) {
       console.error(e);
     }
@@ -67,13 +67,13 @@ function ModelPicker(props, ref) {
           });
         }
 
-        const apiData = await API.graphql(graphqlOperation(query[`search${itemNamePlural}`], {
+        const apiData = await API.graphql(graphqlOperation(query[`search${itemNamePlural.replace(' ', '')}`], {
           limit: 3,
           filter: {
             and: searchFilter
           }
         }));
-        setOptions(apiData['data'][`search${itemNamePlural}`].items);
+        setOptions(apiData['data'][`search${itemNamePlural.replace(' ', '')}`].items);
       } catch (e) {
         console.error(e);
         clearOptions();
