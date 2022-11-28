@@ -26,7 +26,7 @@ type FeaturedEvent @model @searchable @auth(rules: [
 ]) {
     id: ID!
     name: String!
-    iconImage: String!
+    iconImage: String # This gets saved before the image is uploaded so it will fail if required
     description: String
     schedules: [Schedule!] @hasMany
     liveFrom: AWSDateTime!
@@ -89,7 +89,7 @@ type Network @model @searchable @auth(rules: [
     id: ID!
     name: String!
     symbol: String!
-    image: String!
+    image: String # This gets saved before the image is uploaded so it will fail if required
     config: String!
     method: String
     platforms: [Platform] @hasMany
