@@ -1,6 +1,42 @@
 ---
 plan:
   - input:
+      table: FeaturedEvent-e4gu4fakirgfrplzgroyp2o43a-prod
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    output:
+      table: FeaturedEvent-fgl5rue5hrgmjeay45of5gc2kq-stage
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    stream:
+      disabled: true
+    backfill:
+      disabled: false
+  - input:
+      table: Schedule-e4gu4fakirgfrplzgroyp2o43a-prod
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    output:
+      table: Schedule-fgl5rue5hrgmjeay45of5gc2kq-stage
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    stream:
+      disabled: true
+    backfill:
+      disabled: false
+  - input:
+      table: PlatformAgenda-e4gu4fakirgfrplzgroyp2o43a-prod
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    output:
+      table: PlatformAgenda-fgl5rue5hrgmjeay45of5gc2kq-stage
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill
+    stream:
+      disabled: true
+    backfill:
+      disabled: false
+  - input:
       table: Category-e4gu4fakirgfrplzgroyp2o43a-prod
       region: us-east-2
       role_arn: arn:aws:iam::777849778645:role/prod-to-stage-backfill

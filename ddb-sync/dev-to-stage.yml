@@ -1,0 +1,98 @@
+---
+plan:
+  - input:
+      table: FeaturedEvent-3vzmotapqfg5hph7usnkog5pta-dev
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+    output:
+      table: FeaturedEvent-fgl5rue5hrgmjeay45of5gc2kq-stage
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+    stream:
+      disabled: true
+    backfill:
+      disabled: false
+  - input:
+      table: Schedule-3vzmotapqfg5hph7usnkog5pta-dev
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+    output:
+      table: Schedule-fgl5rue5hrgmjeay45of5gc2kq-stage
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+    stream:
+      disabled: true
+    backfill:
+      disabled: false
+  - input:
+      table: PlatformAgenda-3vzmotapqfg5hph7usnkog5pta-dev
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+    output:
+      table: PlatformAgenda-fgl5rue5hrgmjeay45of5gc2kq-stage
+      region: us-east-2
+      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+    stream:
+      disabled: true
+    backfill:
+      disabled: false
+#  - input:
+#      table: Category-3vzmotapqfg5hph7usnkog5pta-dev
+#      region: us-east-2
+#      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+#    output:
+#      table: Category-fgl5rue5hrgmjeay45of5gc2kq-stage
+#      region: us-east-2
+#      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+#    stream:
+#      disabled: true
+#    backfill:
+#      disabled: false
+#  - input:
+#      table: Network-3vzmotapqfg5hph7usnkog5pta-dev
+#      region: us-east-2
+#      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+#    output:
+#      table: Network-fgl5rue5hrgmjeay45of5gc2kq-stage
+#      region: us-east-2
+#      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+#    stream:
+#      disabled: true
+#    backfill:
+#      disabled: false
+#  - input:
+#      table: Platform-3vzmotapqfg5hph7usnkog5pta-dev
+#      region: us-east-2
+#      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+#    output:
+#      table: Platform-fgl5rue5hrgmjeay45of5gc2kq-stage
+#      region: us-east-2
+#      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+#    stream:
+#      disabled: true
+#    backfill:
+#      disabled: false
+#  - input:
+#      table: PlatformTags-3vzmotapqfg5hph7usnkog5pta-dev
+#      region: us-east-2
+#      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+#    output:
+#      table: PlatformTags-fgl5rue5hrgmjeay45of5gc2kq-stage
+#      region: us-east-2
+#      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+#    stream:
+#      disabled: true
+#    backfill:
+#      disabled: false
+#  - input:
+#      table: Tag-3vzmotapqfg5hph7usnkog5pta-dev
+#      region: us-east-2
+#      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+#    output:
+#      table: Tag-fgl5rue5hrgmjeay45of5gc2kq-stage
+#      region: us-east-2
+#      role_arn: arn:aws:iam::777849778645:role/dev-to-stage-backfill
+#    stream:
+#      disabled: true
+#    backfill:
+#      disabled: false
